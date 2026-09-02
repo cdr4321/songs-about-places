@@ -1,53 +1,17 @@
 # Songs About Places
 
-An interactive map of 957 charting Billboard songs, 1940–2026, whose titles name a real place.
+An interactive map of every song that has charting on Billboard's weekly or yearly chart, 1940–2026, whose titles name a real place.
 
 ```
 index.html                          the whole site
 SETUP.md                            step-by-step setup guide
-data/places.json                    268 places, 957 songs
+data/places.json                    places and songs
 scripts/find_new_place_songs.py     weekly check for new songs
 scripts/apply_approved.py           publishes the rows you approve
 scripts/place_terms.json            place vocabulary + your past rejections
 .github/workflows/weekly-check.yml  runs the check every Wednesday
 review/candidates.csv               the review queue (generated)
 ```
-
-**New to this? Start with [SETUP.md](SETUP.md)** — step-by-step, assumes no prior GitHub experience.
-
-## Run it locally
-
-`index.html` fetches `data/places.json`, so opening the file directly won't work —
-browsers block `fetch` on `file://`. Serve it instead:
-
-```bash
-python3 -m http.server 8000
-# then open http://localhost:8000
-```
-
-## Publish it
-
-**1. Put this folder in a GitHub repo and turn on Pages**
-Settings → Pages → Source: *Deploy from a branch* → `main`, folder `/ (root)`.
-You'll get `https://<you>.github.io/<repo>/`.
-
-**2. Embed that URL in Squarespace**
-Add a **Code** block to the page and paste:
-
-```html
-<iframe src="https://<you>.github.io/<repo>/"
-        style="width:100%;height:80vh;border:0"
-        title="Songs About Places" loading="lazy"></iframe>
-```
-
-Code blocks need a Business plan or higher. On Personal, an **Embed** block
-pointed at the same URL usually works. Verify against Squarespace's current
-plan documentation before committing — their feature tiers change.
-
-Hosting on Pages rather than pasting the HTML into Squarespace is what makes
-the weekly updates work: the page reads `data/places.json` at load time, so
-when the Action updates that file, the embedded map updates too. Nothing to
-re-paste.
 
 ## Weekly updates
 
@@ -61,13 +25,9 @@ vocabulary, since a new term should be tested against history.
 
 **It never publishes on its own, by design.** The matcher cannot tell Ms.
 Jackson from Jackson, Mississippi, or fine china from China, and a place that
-has never charted before has no coordinates. Both need a person. It suppresses the 59 titles you rejected during cleanup, and matches credits
+has never charted before has no coordinates. Both need a person. Matches credits
 on the lead act, so "Kenny Ball" and "Kenny Ball and his Jazzmen" count as the
 same record rather than reappearing weekly.
-
-A full-archive re-audit currently returns 5 songs — 4 that your source lists
-dropped ("Born In The USA", "Oklahoma Smoke Show", "Black & Chinese",
-"Dubai Shit") and one alternate recording of "Woodstock".
 
 To publish a batch:
 
@@ -89,9 +49,8 @@ expects columns `chart_week, title, performer, peak_pos`.
 
 ## Teaching it about rejections
 
-`place_terms.json` holds a `blocked` list of `[term, title]` pairs — the 59
-judgements from your cleanup, so the scan won't keep resurfacing "Sweet Georgia
-Brown" or "Bohemian Rhapsody". When you reject a candidate, add it there and
+`place_terms.json` holds a `blocked` list of `[term, title]` pairs, so the scan won't keep resurfacing 
+"Sweet Georgia Brown" or "Bohemian Rhapsody". When you reject a candidate, add it there and
 the scan will stay quiet about it from then on.
 
 ## Notes
