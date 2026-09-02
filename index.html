@@ -106,7 +106,7 @@
     <header>
       <div class="eyebrow">Billboard charts · 1940–2026</div>
       <h1>Songs About Places</h1>
-      <p class="sub">957 charting songs that name somewhere real. Tap a marker to hear them.</p>
+      <p class="sub" id="sub">Charting songs that name somewhere real. Tap a marker to hear them.</p>
     </header>
 
     <div class="controls">
@@ -133,7 +133,7 @@
       </div>
     </div>
 
-    <div class="tally"><b id="ns">957</b> songs · <b id="np">268</b> places shown</div>
+    <div class="tally"><b id="ns">—</b> songs · <b id="np">—</b> places shown</div>
 
     <div id="results">
       <div class="rhead"><h2 id="rt">Nothing selected</h2><p id="rs">Pick a marker to list its songs.</p></div>
@@ -272,7 +272,11 @@ f.oninput=years; t.oninput=years;
 document.getElementById('q').oninput=e=>{state.q=e.target.value;draw();};
 map.on('click',clearSel);
 
-fetch('data/places.json').then(r=>r.json()).then(d=>{PLACES=d;draw();})
+fetch('data/places.json').then(r=>r.json()).then(d=>{PLACES=d;
+  const n=d.reduce((a,p)=>a+p.s.length,0);
+  document.getElementById('sub').textContent=
+    n+' charting songs that name somewhere real. Tap a marker to hear them.';
+  draw();})
  .catch(()=>{document.getElementById('rlist').innerHTML=
    '<p class="empty">Couldn\'t load data/places.json. If you opened this file directly, run a local server instead: <code>python3 -m http.server</code></p>';});
 </script>
