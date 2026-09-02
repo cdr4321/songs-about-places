@@ -64,6 +64,7 @@ the scan will stay quiet about it from then on.
   keyless tiles with "API KEY REQUIRED" in August 2026 and is retiring its
   raster service. Esri's equivalent needs no key. If you'd rather use CARTO,
   get a free key at carto.com/basemaps/apikey and follow the commented block
+
   near the top of the script in `index.html` — note the tile URLs order their
   coordinates differently ({z}/{x}/{y} vs {z}/{y}/{x}).
 - The map needs a network connection — Leaflet, the tiles, and the fonts all
