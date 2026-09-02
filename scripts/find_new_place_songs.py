@@ -74,6 +74,13 @@ def tokens(title):
     return TOK.findall(ANNOT.sub(" ", t).replace("&", " and ").lower())
 
 
+def depossess(word):
+    """Hollywood's -> Hollywood, Texas' -> Texas. Without this, any possessive
+    place name is invisible to the matcher: "Hollywood's Not America" matched
+    America but not Hollywood."""
+    return re.sub(r"'s$", "", re.sub(r"s'$", "s", word))
+
+
 def extract(title, terms, blocked):
     """Longest-match place terms in a title, honouring per-title exclusions."""
     T, i, seen, hits = tokens(title), 0, set(), []
@@ -84,6 +91,11 @@ def extract(title, terms, blocked):
                 p = " ".join(T[i:i + n]).strip("'")
                 if p in terms:
                     m = (p, n)
+                    break
+                # retry with possessives removed
+                dp = " ".join(depossess(w) for w in T[i:i + n]).strip("'")
+                if dp != p and dp in terms:
+                    m = (dp, n)
                     break
         if m:
             term = m[0]
