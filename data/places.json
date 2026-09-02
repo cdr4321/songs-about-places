@@ -4,7 +4,7 @@
     "c": "Country",
     "lat": 38.8951,
     "lon": -77.0364,
-    "n": 108,
+    "n": 110,
     "s": [
       {"y": 1940, "t": "God Bless America", "a": "Kate Smith", "m": "Direct", "ye": null, "wk": 5},
       {"y": 1942, "t": "American Patrol", "a": "The Glenn Miller Orchestra", "m": "Demonym", "ye": 90, "wk": null},
@@ -66,6 +66,7 @@
       {"y": 1986, "t": "For America", "a": "Jackson Browne", "m": "Direct", "ye": null, "wk": 30},
       {"y": 1986, "t": "Hands Across America", "a": "Voices Of America", "m": "Direct", "ye": null, "wk": 65},
       {"y": 1986, "t": "R.O.C.K. in the U.S.A.", "a": "John Cougar Mellencamp", "m": "Direct", "ye": 66, "wk": 2},
+      {"y": 1986, "t": "Voice Of America's Sons", "a": "John Cafferty & The Beaver Brown Band", "m": "Direct", "ye": null, "wk": 62},
       {"y": 1986, "t": "Yankee Rose", "a": "David Lee Roth", "m": "Demonym", "ye": null, "wk": 16},
       {"y": 1987, "t": "American Dream", "a": "Simon F", "m": "Demonym", "ye": null, "wk": 91},
       {"y": 1988, "t": "Coming To America", "a": "The System", "m": "Direct", "ye": null, "wk": 91},
@@ -88,6 +89,7 @@
       {"y": 2008, "t": "American Boy", "a": "Estelle Featuring Kanye West", "m": "Demonym", "ye": 39, "wk": 9},
       {"y": 2008, "t": "American Boy", "a": "Studio All-Stars", "m": "Demonym", "ye": null, "wk": 52},
       {"y": 2008, "t": "Hollywood's Not America", "a": "Ferras", "m": "Direct", "ye": null, "wk": 62},
+      {"y": 2009, "t": "America's Suitehearts", "a": "Fall Out Boy", "m": "Direct", "ye": null, "wk": 78},
       {"y": 2009, "t": "American Ride", "a": "Toby Keith", "m": "Demonym", "ye": null, "wk": 35},
       {"y": 2009, "t": "American Saturday Night", "a": "Brad Paisley", "m": "Demonym", "ye": null, "wk": 67},
       {"y": 2009, "t": "It's America", "a": "Rodney Atkins", "m": "Direct", "ye": null, "wk": 44},
@@ -167,8 +169,9 @@
     "c": "City",
     "lat": 40.6643,
     "lon": -73.9385,
-    "n": 24,
+    "n": 25,
     "s": [
+      {"y": 1965, "t": "New York's A Lonely Town", "a": "The Trade Winds", "m": "Direct", "ye": null, "wk": 32},
       {"y": 1965, "t": "The Boy From New York City", "a": "The Ad Libs", "m": "Direct", "ye": 98, "wk": 8},
       {"y": 1967, "t": "\"New York Mining Disaster 1941 (Have You Seen My Wife, Mr. Jones)\"", "a": "Bee Gees", "m": "Direct", "ye": null, "wk": 14},
       {"y": 1968, "t": "The Eyes Of A New York Woman", "a": "B.J. Thomas", "m": "Direct", "ye": null, "wk": 28},
@@ -428,6 +431,27 @@
     ]
   },
   {
+    "p": "Hollywood, California, United States",
+    "c": "Neighborhood/District",
+    "lat": 34.0928,
+    "lon": -118.3287,
+    "n": 12,
+    "s": [
+      {"y": 1961, "t": "Hollywood", "a": "Connie Francis", "m": "Direct", "ye": null, "wk": 42},
+      {"y": 1974, "t": "Hollywood Swinging", "a": "Kool & The Gang", "m": "Direct", "ye": 59, "wk": 6},
+      {"y": 1975, "t": "Hollywood Hot", "a": "The Eleventh Hour", "m": "Direct", "ye": null, "wk": 55},
+      {"y": 1975, "t": "Rockin' And Rollin' On The Streets Of Hollywood", "a": "Buddy Miles", "m": "Direct", "ye": null, "wk": 91},
+      {"y": 1977, "t": "Hollywood", "a": "Rufus Featuring Chaka Khan", "m": "Direct", "ye": null, "wk": 32},
+      {"y": 1978, "t": "Hollywood", "a": "Boz Scaggs", "m": "Direct", "ye": null, "wk": 49},
+      {"y": 1978, "t": "Hollywood Nights", "a": "Bob Seger & The Silver Bullet Band", "m": "Direct", "ye": 99, "wk": 12},
+      {"y": 1981, "t": "Say Goodbye To Hollywood", "a": "Billy Joel", "m": "Direct", "ye": null, "wk": 17},
+      {"y": 1982, "t": "Hollywood", "a": "Shooting Star", "m": "Direct", "ye": null, "wk": 70},
+      {"y": 2008, "t": "Hollywood's Not America", "a": "Ferras", "m": "Direct", "ye": null, "wk": 62},
+      {"y": 2010, "t": "Hollywood", "a": "Michael Buble", "m": "Direct", "ye": null, "wk": 55},
+      {"y": 2019, "t": "Hollywood's Bleeding", "a": "Post Malone", "m": "Direct", "ye": null, "wk": 15}
+    ]
+  },
+  {
     "p": "Paris, France",
     "c": "City",
     "lat": 48.8534,
@@ -503,25 +527,6 @@
       {"y": 1974, "t": "Mississippi Cotton Picking Delta Town", "a": "Charley Pride", "m": "Direct", "ye": null, "wk": 70},
       {"y": 2005, "t": "Mississippi Girl", "a": "Faith Hill", "m": "Direct", "ye": 98, "wk": 29},
       {"y": 2021, "t": "One Mississippi", "a": "Kane Brown", "m": "Direct", "ye": 99, "wk": 36}
-    ]
-  },
-  {
-    "p": "Hollywood, California, United States",
-    "c": "Neighborhood/District",
-    "lat": 34.0928,
-    "lon": -118.3287,
-    "n": 10,
-    "s": [
-      {"y": 1961, "t": "Hollywood", "a": "Connie Francis", "m": "Direct", "ye": null, "wk": 42},
-      {"y": 1974, "t": "Hollywood Swinging", "a": "Kool & The Gang", "m": "Direct", "ye": 59, "wk": 6},
-      {"y": 1975, "t": "Hollywood Hot", "a": "The Eleventh Hour", "m": "Direct", "ye": null, "wk": 55},
-      {"y": 1975, "t": "Rockin' And Rollin' On The Streets Of Hollywood", "a": "Buddy Miles", "m": "Direct", "ye": null, "wk": 91},
-      {"y": 1977, "t": "Hollywood", "a": "Rufus Featuring Chaka Khan", "m": "Direct", "ye": null, "wk": 32},
-      {"y": 1978, "t": "Hollywood", "a": "Boz Scaggs", "m": "Direct", "ye": null, "wk": 49},
-      {"y": 1978, "t": "Hollywood Nights", "a": "Bob Seger & The Silver Bullet Band", "m": "Direct", "ye": 99, "wk": 12},
-      {"y": 1981, "t": "Say Goodbye To Hollywood", "a": "Billy Joel", "m": "Direct", "ye": null, "wk": 17},
-      {"y": 1982, "t": "Hollywood", "a": "Shooting Star", "m": "Direct", "ye": null, "wk": 70},
-      {"y": 2010, "t": "Hollywood", "a": "Michael Buble", "m": "Direct", "ye": null, "wk": 55}
     ]
   },
   {
@@ -722,7 +727,7 @@
     "c": "Country",
     "lat": 45.4112,
     "lon": -75.6981,
-    "n": 7,
+    "n": 8,
     "s": [
       {"y": 1949, "t": "Canadian Capers (Cuttin' Capers)", "a": "Doris Day", "m": "Demonym", "ye": null, "wk": 15},
       {"y": 1956, "t": "Canadian Sunset", "a": "Andy Williams", "m": "Demonym", "ye": null, "wk": 10},
@@ -730,6 +735,7 @@
       {"y": 1956, "t": "Canadian Sunset", "a": "Hugo Winterhalter", "m": "Demonym", "ye": null, "wk": 3},
       {"y": 1961, "t": "Canadian Sunset", "a": "Etta Jones", "m": "Demonym", "ye": null, "wk": 91},
       {"y": 1965, "t": "Canadian Sunset", "a": "Sounds Orchestral", "m": "Demonym", "ye": null, "wk": 76},
+      {"y": 1974, "t": "The Americans (A Canadian's Opinion)", "a": "Gordon Sinclair", "m": "Demonym", "ye": null, "wk": 24},
       {"y": 2006, "t": "Canadian Idiot", "a": "\"Weird Al\" Yankovic", "m": "Demonym", "ye": null, "wk": 82}
     ]
   },
