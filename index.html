@@ -32,6 +32,14 @@
   .controls{padding:16px 22px;overflow-y:auto;flex:1;min-height:0}
   .grp{margin-bottom:20px}
   .lbl{font:500 11px/1 "Barlow Condensed",sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--foam);margin-bottom:9px;display:block}
+  .lblrow{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+  .setall{display:flex;gap:4px;margin-bottom:9px}
+  .setall button{
+    font:500 10.5px/1 "Barlow Condensed",sans-serif;letter-spacing:.09em;text-transform:uppercase;
+    background:transparent;border:1px solid var(--rule);border-radius:2px;
+    color:var(--mute);padding:4px 7px;cursor:pointer
+  }
+  .setall button:hover{border-color:var(--dial-dim);color:var(--ink)}
   .chips{display:flex;flex-wrap:wrap;gap:6px}
   .chip{
     font:500 12px/1 "Barlow Condensed",sans-serif;letter-spacing:.05em;text-transform:uppercase;
@@ -47,7 +55,25 @@
   }
   input[type=search]::placeholder{color:var(--mute)}
   .yrs{display:flex;justify-content:space-between;font:500 13px "Barlow Condensed",sans-serif;color:var(--dial);letter-spacing:.06em}
-  input[type=range]{width:100%;margin:4px 0;accent-color:var(--dial)}
+  /* two range inputs stacked on one track so it reads as a single control */
+  .dual{position:relative;height:34px;margin-top:6px}
+  .dtrack,.dfill{position:absolute;top:15px;height:4px;border-radius:2px}
+  .dtrack{left:0;right:0;background:var(--rule)}
+  .dfill{background:var(--dial)}
+  .dual input[type=range]{
+    position:absolute;top:0;left:0;width:100%;height:34px;margin:0;
+    background:none;pointer-events:none;-webkit-appearance:none;appearance:none
+  }
+  .dual input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;pointer-events:auto;width:22px;height:22px;border-radius:50%;
+    background:var(--dial);border:2px solid var(--panel);cursor:grab;
+    box-shadow:0 1px 4px rgba(0,0,0,.5)
+  }
+  .dual input[type=range]::-moz-range-thumb{
+    pointer-events:auto;width:22px;height:22px;border-radius:50%;
+    background:var(--dial);border:2px solid var(--panel);cursor:grab
+  }
+  .dual input[type=range]::-moz-range-track{background:none}
   .tally{padding:13px 22px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--mute)}
   .tally b{color:var(--ink);font-weight:600}
   /* ---------- results ---------- */
@@ -186,20 +212,29 @@
       </div>
 
       <div class="grp">
-        <span class="lbl">Kind of place</span>
+        <div class="lblrow">
+          <span class="lbl">Kind of place</span>
+          <span class="setall"><button type="button" data-g="cats" data-v="1">All</button><button type="button" data-g="cats" data-v="0">None</button></span>
+        </div>
         <div class="chips" id="cats"></div>
       </div>
 
       <div class="grp">
-        <span class="lbl">How it's named</span>
+        <div class="lblrow">
+          <span class="lbl">How it's named</span>
+          <span class="setall"><button type="button" data-g="ments" data-v="1">All</button><button type="button" data-g="ments" data-v="0">None</button></span>
+        </div>
         <div class="chips" id="ments"></div>
       </div>
 
       <div class="grp">
         <span class="lbl">Years on the chart</span>
         <div class="yrs"><span id="y0">1940</span><span id="y1">2026</span></div>
-        <input type="range" id="from" min="1940" max="2026" value="1940" aria-label="Earliest year" />
-        <input type="range" id="to" min="1940" max="2026" value="2026" aria-label="Latest year" />
+        <div class="dual">
+          <div class="dtrack"></div><div class="dfill" id="dfill"></div>
+          <input type="range" id="from" min="1940" max="2026" value="1940" aria-label="Earliest year" />
+          <input type="range" id="to" min="1940" max="2026" value="2026" aria-label="Latest year" />
+        </div>
       </div>
     </div>
 
@@ -225,7 +260,7 @@ const state={cats:new Set(CATS),ments:new Set(MENTS),from:1940,to:2026,q:'',sel:
 const touch=matchMedia('(hover:none)').matches;
 let PLACES=[],layer,markers=new Map();
 
-const map=L.map('map',{worldCopyJump:true,minZoom:2,zoomControl:true}).setView([31,-30],3);
+const map=L.map('map',{worldCopyJump:true,minZoom:2,maxZoom:16,zoomControl:true}).setView([31,-30],3);
 // Esri Dark Gray Canvas — no API key needed.
 // CARTO began watermarking keyless tiles in Aug 2026 and is retiring its raster
 // service, so this avoids both problems. To use CARTO instead, get a free key at
@@ -233,12 +268,14 @@ const map=L.map('map',{worldCopyJump:true,minZoom:2,zoomControl:true}).setView([
 //   https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png?key=YOUR_KEY
 // (note CARTO uses {z}/{x}/{y}; Esri below uses {z}/{y}/{x} — the order differs)
 const ESRI='https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/';
+// detectRetina pulls higher-zoom tiles on high-DPI screens, which is what makes
+// the difference on a phone; maxZoom 16 lets you actually zoom in to street level
 L.tileLayer(ESRI+'World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{
   attribution:'Tiles &copy; <a href="https://www.esri.com">Esri</a> &mdash; data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  maxZoom:11
+  maxZoom:16,detectRetina:true
 }).addTo(map);
 L.tileLayer(ESRI+'World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
-  {maxZoom:11,opacity:.75}).addTo(map);
+  {maxZoom:16,detectRetina:true,opacity:.75}).addTo(map);
 
 function chips(el,list,set){
   el.innerHTML='';
@@ -247,7 +284,6 @@ function chips(el,list,set){
     b.className='chip'; b.type='button'; b.textContent=v;
     b.setAttribute('aria-pressed','true');
     b.onclick=()=>{
-      if(set.has(v)&&set.size===1) return;      // never let the map go blank
       set.has(v)?set.delete(v):set.add(v);
       b.setAttribute('aria-pressed',set.has(v));
       draw();
@@ -257,16 +293,29 @@ function chips(el,list,set){
 }
 chips(document.getElementById('cats'),CATS,state.cats);
 chips(document.getElementById('ments'),MENTS,state.ments);
+document.querySelectorAll('.setall button').forEach(b=>{
+  b.onclick=()=>{
+    const g=b.dataset.g, on=b.dataset.v==='1';
+    const set=g==='cats'?state.cats:state.ments, list=g==='cats'?CATS:MENTS;
+    set.clear(); if(on) list.forEach(v=>set.add(v));
+    document.querySelectorAll('#'+g+' .chip').forEach(c=>c.setAttribute('aria-pressed',set.has(c.textContent)));
+    draw();
+  };
+});
 
-function songsOf(p){
-  return p.s.filter(s=>state.ments.has(s.m)&&s.y>=state.from&&s.y<=state.to);
+function songsOf(p,q,placeHit){
+  return p.s.filter(s=>{
+    if(!state.ments.has(s.m)||s.y<state.from||s.y>state.to) return false;
+    if(!q||placeHit) return true;
+    return s.t.toLowerCase().includes(q)||s.a.toLowerCase().includes(q);
+  });
 }
 function visible(){
   const q=state.q.trim().toLowerCase();
   return PLACES.map(p=>{
     if(!state.cats.has(p.c)) return null;
-    if(q&&!p.p.toLowerCase().includes(q)) return null;
-    const s=songsOf(p);
+    const placeHit=!q||p.p.toLowerCase().includes(q);
+    const s=songsOf(p,q,placeHit);
     return s.length?{...p,f:s}:null;
   }).filter(Boolean);
 }
@@ -307,23 +356,49 @@ function draw(){
   document.getElementById('np').textContent=vis.length;
   document.getElementById('ns').textContent=nSongs;
   document.getElementById('mcount').textContent=nSongs+' songs';
+  if(state.q.trim()&&!state.sel) showMatches(vis,nSongs);
   if(state.sel){ const still=vis.find(p=>p.p===state.sel.p); still?select(still,true):clearSel(); }
+  if(!vis.length&&!state.sel){
+    document.getElementById('rt').textContent=state.q.trim()?'No matches':'Nothing shown';
+    document.getElementById('rs').textContent=state.cats.size===0||state.ments.size===0
+      ? 'Every filter in one group is switched off.' : 'Widen the filters or the year range.';
+    document.getElementById('rlist').innerHTML='<p class="empty">'+
+      (state.cats.size===0?'No place types selected — tap <b>All</b> under “Kind of place”.'
+       :state.ments.size===0?'No mention types selected — tap <b>All</b> under “How it’s named”.'
+       :'Nothing matches the current filters.')+'</p>';
+  }
 }
 
+function showMatches(vis,nSongs){
+  const rows=[];
+  vis.forEach(p=>p.f.forEach(s=>rows.push({s,p})));
+  rows.sort((a,b)=>a.s.y-b.s.y||a.s.t.localeCompare(b.s.t));
+  const cap=rows.slice(0,80);
+  document.getElementById('rt').textContent='Matching "'+state.q.trim()+'"';
+  document.getElementById('rs').textContent=
+    nSongs+(nSongs===1?' song':' songs')+' in '+vis.length+(vis.length===1?' place':' places')+
+    (rows.length>80?' — first 80 shown':'');
+  document.getElementById('rlist').innerHTML = cap.length
+    ? cap.map(({s,p})=>songRow(s,p.p)).join('')
+    : '<p class="empty">Nothing matches that. Try a place, a song title, or an artist.</p>';
+  if(mob()) results.classList.add('up');
+}
+function songRow(s,placeName){
+  const pk=[];
+  if(s.wk) pk.push('<span class="pk">Weekly peak <b>'+s.wk+'</b></span>');
+  if(s.ye) pk.push('<span class="pk">Year-end <b>'+s.ye+'</b></span>');
+  if(s.m!=='Direct') pk.push('<span class="pk">'+s.m+'</span>');
+  return '<div class="song"><div class="yr">'+s.y+'</div><div>'+
+    '<div class="ttl">'+esc(s.t)+'</div><div class="art">'+esc(s.a)+
+    (placeName?' <span style="color:var(--foam)">· '+esc(placeName.split(',')[0])+'</span>':'')+'</div>'+
+    '<div class="meta">'+pk.join('')+'<a class="yt" href="'+yt(s)+'" target="_blank" rel="noopener">Find on YouTube</a>'+
+    '</div></div></div>';
+}
 function select(p,keep){
   state.sel=p;
   document.getElementById('rt').textContent=p.p;
   document.getElementById('rs').textContent=p.c+' · '+p.f.length+(p.f.length===1?' song':' songs');
-  document.getElementById('rlist').innerHTML=p.f.map(s=>{
-    const pk=[];
-    if(s.wk) pk.push('<span class="pk">Weekly peak <b>'+s.wk+'</b></span>');
-    if(s.ye) pk.push('<span class="pk">Year-end <b>'+s.ye+'</b></span>');
-    if(s.m!=='Direct') pk.push('<span class="pk">'+s.m+'</span>');
-    return '<div class="song"><div class="yr">'+s.y+'</div><div>'+
-      '<div class="ttl">'+esc(s.t)+'</div><div class="art">'+esc(s.a)+'</div>'+
-      '<div class="meta">'+pk.join('')+'<a class="yt" href="'+yt(s)+'" target="_blank" rel="noopener">Find on YouTube</a>'+
-      '</div></div></div>';
-  }).join('');
+  document.getElementById('rlist').innerHTML=p.f.map(s=>songRow(s,'')).join('');
   document.querySelectorAll('.dot.on').forEach(e=>e.classList.remove('on'));
   const m=markers.get(p.p); if(m&&m._icon) m._icon.querySelector('.dot')?.classList.add('on');
   if(!keep) document.getElementById('results').scrollTop=0;
@@ -351,17 +426,28 @@ scrim.onclick=()=>drawer(false);
 document.getElementById('rclose').onclick=()=>{results.classList.remove('up');clearSel();};
 addEventListener('keydown',e=>{if(e.key==='Escape'){drawer(false);results.classList.remove('up');}});
 
-const f=document.getElementById('from'),t=document.getElementById('to');
+const f=document.getElementById('from'),t=document.getElementById('to'),
+      dfill=document.getElementById('dfill'),MIN=1940,MAX=2026;
 function years(){
   let a=+f.value,b=+t.value;
-  if(a>b){ [a,b]=[b,a]; }
+  if(a>b){ if(document.activeElement===f) b=a; else a=b; f.value=a; t.value=b; }
   state.from=a; state.to=b;
   document.getElementById('y0').textContent=a;
   document.getElementById('y1').textContent=b;
+  const l=(a-MIN)/(MAX-MIN)*100, r=(b-MIN)/(MAX-MIN)*100;
+  dfill.style.left=l+'%'; dfill.style.width=(r-l)+'%';
+  // whichever handle is at the far right must sit on top, or it can't be grabbed
+  f.style.zIndex = a>MAX-((MAX-MIN)*0.12) ? 5 : 4;
+  t.style.zIndex = 4;
   draw();
 }
 f.oninput=years; t.oninput=years;
-document.getElementById('q').oninput=e=>{state.q=e.target.value;draw();};
+years();
+document.getElementById('q').oninput=e=>{
+  state.q=e.target.value;
+  if(!state.q.trim()&&!state.sel) clearSel();
+  draw();
+};
 map.on('click',clearSel);
 
 fetch('data/places.json').then(r=>r.json()).then(d=>{PLACES=d;
