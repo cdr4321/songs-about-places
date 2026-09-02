@@ -95,6 +95,15 @@
       text-decoration:none;border:1px solid rgba(233,162,59,.32)}
   .yt:hover{background:var(--dial);color:#14130F}
   .empty{padding:24px 22px;color:var(--mute);font-size:13px}
+  .foot{margin-top:22px;padding-top:16px;border-top:1px solid var(--rule)}
+  .foot p{margin:0 0 9px;font-size:12.5px;color:var(--mute);line-height:1.45}
+  .foot a.contact{
+    display:inline-block;font:500 11px/1 "Barlow Condensed",sans-serif;
+    letter-spacing:.11em;text-transform:uppercase;text-decoration:none;
+    padding:8px 12px;border:1px solid rgba(233,162,59,.42);border-radius:3px;
+    color:var(--dial);transition:.15s
+  }
+  .foot a.contact:hover{background:var(--dial);color:#14130F;border-color:var(--dial)}
   /* ---------- map ---------- */
   #map{height:100%;background:var(--night)}
   .leaflet-container{background:var(--night);font-family:"Spline Sans",sans-serif}
@@ -208,7 +217,7 @@
     <div class="controls">
       <div class="grp">
         <label class="lbl" for="q">Find a place</label>
-        <input type="search" id="q" placeholder="Memphis, Ireland, Harlem…" autocomplete="off" />
+        <input type="search" id="q" placeholder="Memphis, Africa, Sinatra, Harlem…" autocomplete="off" />
       </div>
 
       <div class="grp">
@@ -236,6 +245,12 @@
           <input type="range" id="to" min="1940" max="2026" value="2026" aria-label="Latest year" />
         </div>
       </div>
+
+      <div class="foot">
+        <p>Something incorrect or missing? Let me know.</p>
+        <a class="contact" href="https://www.chrisdallariva.com/contact"
+           target="_blank" rel="noopener">Get in touch</a>
+      </div>
     </div>
 
     <div class="tally"><b id="ns">—</b> songs · <b id="np">—</b> places shown</div>
@@ -245,7 +260,7 @@
         <button id="rclose" type="button" aria-label="Close song list">&times;</button>
         <h2 id="rt">Nothing selected</h2><p id="rs">Pick a marker to list its songs.</p>
       </div>
-      <div id="rlist"><p class="empty">Every marker is a place named in a song title. Bigger markers carry more songs.</p></div>
+      <div id="rlist"><p class="empty">Every marker is a place named in a song title. Bigger markers carry more songs.<br><br>Something incorrect or missing? <a href="https://www.chrisdallariva.com/contact" target="_blank" rel="noopener" style="color:var(--dial)">Let me know</a>.</p></div>
     </div>
   </aside>
   <main><div id="map"></div></main>
@@ -314,7 +329,9 @@ function visible(){
   const q=state.q.trim().toLowerCase();
   return PLACES.map(p=>{
     if(!state.cats.has(p.c)) return null;
-    const placeHit=!q||p.p.toLowerCase().includes(q);
+    // match the place name, its hierarchy (country, continent, state, aliases),
+    // or any of its songs — so "Africa" surfaces Marrakesh, "UK" surfaces Liverpool
+    const placeHit=!q||p.p.toLowerCase().includes(q)||(p.k||'').includes(q);
     const s=songsOf(p,q,placeHit);
     return s.length?{...p,f:s}:null;
   }).filter(Boolean);
@@ -380,7 +397,7 @@ function showMatches(vis,nSongs){
     (rows.length>80?' — first 80 shown':'');
   document.getElementById('rlist').innerHTML = cap.length
     ? cap.map(({s,p})=>songRow(s,p.p)).join('')
-    : '<p class="empty">Nothing matches that. Try a place, a song title, or an artist.</p>';
+    : '<p class="empty">Nothing matches that. Try a place, a region like Africa or Europe, a song title, or an artist.</p>';
   if(mob()) results.classList.add('up');
 }
 function songRow(s,placeName){
