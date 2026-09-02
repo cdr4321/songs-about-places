@@ -109,16 +109,70 @@
     .sub{font-size:11.5px}
     .chip{font-size:11px;padding:6px 8px}
   }
+  /* ---------- mobile: map first, filters in a drawer, songs in a sheet ---------- */
+  #mtop{display:none}
+  #rclose{display:none}
   @media (max-width:680px){
-    .wrap{grid-template-columns:1fr;grid-template-rows:auto 58dvh}
-    aside{border-right:0;border-bottom:1px solid var(--rule);max-height:42dvh}
-    #results{max-height:none}
+    .wrap{display:block;height:100dvh;position:relative}
+    #mtop{
+      display:flex;align-items:center;gap:10px;height:52px;padding:0 12px;
+      background:var(--panel);border-bottom:1px solid var(--rule);
+      position:relative;z-index:900
+    }
+    #mfilter{
+      font:500 12px/1 "Barlow Condensed",sans-serif;letter-spacing:.09em;text-transform:uppercase;
+      background:transparent;color:var(--dial);border:1px solid rgba(233,162,59,.4);
+      border-radius:3px;padding:8px 11px;flex:none
+    }
+    #mtitle{
+      font:600 16px/1 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.04em;
+      flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+    }
+    #mcount{font-size:11.5px;color:var(--mute);flex:none}
+    main{position:absolute;top:52px;left:0;right:0;bottom:0}
+    #map{height:100%}
+    aside{
+      position:fixed;top:0;bottom:0;left:-100%;width:min(86vw,330px);z-index:1200;
+      border-right:1px solid var(--rule);transition:left .22s ease;overflow-y:auto
+    }
+    aside.open{left:0}
+    #scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1100;border:0}
+    .controls{overflow:visible;flex:none}
+    .tally{display:none}
+    /* song list becomes a bottom sheet */
+    #results{
+      position:fixed;left:0;right:0;bottom:0;max-height:62dvh;z-index:1150;
+      background:var(--panel);border-top:1px solid var(--rule);
+      border-radius:12px 12px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.5);
+      transform:translateY(101%);transition:transform .22s ease;overflow-y:auto
+    }
+    #results.up{transform:translateY(0)}
+    .rhead{padding:15px 18px 9px;border-radius:12px 12px 0 0}
+    .rhead:before{
+      content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);
+      width:34px;height:4px;border-radius:2px;background:var(--rule)
+    }
+    #rclose{
+      display:block;position:absolute;top:12px;right:12px;width:32px;height:32px;
+      background:transparent;border:1px solid var(--rule);border-radius:50%;
+      color:var(--mute);font-size:19px;line-height:1
+    }
+    .song{padding:11px 18px}
+    .yt{padding:7px 10px}
   }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <aside>
+  <div id="mtop">
+    <button id="mfilter" type="button" aria-expanded="false" aria-controls="side">
+      <span aria-hidden="true">☰</span> Filters
+    </button>
+    <span id="mtitle">Songs About Places</span>
+    <span id="mcount">—</span>
+  </div>
+  <div id="scrim" hidden></div>
+  <aside id="side">
     <header>
       <div class="eyebrow">Billboard charts · 1940–2026</div>
       <h1>Songs About Places</h1>
@@ -152,7 +206,10 @@
     <div class="tally"><b id="ns">—</b> songs · <b id="np">—</b> places shown</div>
 
     <div id="results">
-      <div class="rhead"><h2 id="rt">Nothing selected</h2><p id="rs">Pick a marker to list its songs.</p></div>
+      <div class="rhead">
+        <button id="rclose" type="button" aria-label="Close song list">&times;</button>
+        <h2 id="rt">Nothing selected</h2><p id="rs">Pick a marker to list its songs.</p>
+      </div>
       <div id="rlist"><p class="empty">Every marker is a place named in a song title. Bigger markers carry more songs.</p></div>
     </div>
   </aside>
@@ -165,6 +222,7 @@
 const CATS=['City','Country','State/Region','Continent/Region','Street/Landmark','Neighborhood/District','Water/Natural Feature'];
 const MENTS=['Direct','Demonym','Nickname'];
 const state={cats:new Set(CATS),ments:new Set(MENTS),from:1940,to:2026,q:'',sel:null};
+const touch=matchMedia('(hover:none)').matches;
 let PLACES=[],layer,markers=new Map();
 
 const map=L.map('map',{worldCopyJump:true,minZoom:2,zoomControl:true}).setView([31,-30],3);
@@ -236,7 +294,7 @@ function draw(){
       icon:L.divIcon({html:'<div class="dot" style="width:'+d+'px;height:'+d+'px"></div>',
         className:'',iconSize:[d,d],iconAnchor:[d/2,d/2]})});
     const top=p.f.slice(0,4).map(s=>esc(s.t)+' <span style="color:#7D9A9B">'+s.y+'</span>').join('<br>');
-    m.bindTooltip('<div class="tp">'+esc(p.p.split(',')[0])+'</div><div class="tc">'+p.c+' · '+p.f.length+
+    if(!touch) m.bindTooltip('<div class="tp">'+esc(p.p.split(',')[0])+'</div><div class="tc">'+p.c+' · '+p.f.length+
       (p.f.length===1?' song':' songs')+'</div><div class="tl">'+top+'</div>'+
       (p.f.length>4?'<div class="tm">+'+(p.f.length-4)+' more — click to see all</div>':''),
       {className:'tip',direction:'top',offset:[0,-d/2-2]});
@@ -245,8 +303,10 @@ function draw(){
     layer.addLayer(m);
   });
   map.addLayer(layer);
+  const nSongs=vis.reduce((a,p)=>a+p.f.length,0);
   document.getElementById('np').textContent=vis.length;
-  document.getElementById('ns').textContent=vis.reduce((a,p)=>a+p.f.length,0);
+  document.getElementById('ns').textContent=nSongs;
+  document.getElementById('mcount').textContent=nSongs+' songs';
   if(state.sel){ const still=vis.find(p=>p.p===state.sel.p); still?select(still,true):clearSel(); }
 }
 
@@ -267,13 +327,29 @@ function select(p,keep){
   document.querySelectorAll('.dot.on').forEach(e=>e.classList.remove('on'));
   const m=markers.get(p.p); if(m&&m._icon) m._icon.querySelector('.dot')?.classList.add('on');
   if(!keep) document.getElementById('results').scrollTop=0;
+  if(mob()){ drawer(false); results.classList.add('up'); }
 }
 function clearSel(){
   state.sel=null;
+  if(mob()) results.classList.remove('up');
   document.getElementById('rt').textContent='Nothing selected';
   document.getElementById('rs').textContent='Pick a marker to list its songs.';
   document.getElementById('rlist').innerHTML='<p class="empty">Every marker is a place named in a song title. Bigger markers carry more songs.</p>';
 }
+
+// --- mobile drawer + bottom sheet ---
+const mob=()=>matchMedia('(max-width:680px)').matches;
+const side=document.getElementById('side'), scrim=document.getElementById('scrim'),
+      mfilter=document.getElementById('mfilter'), results=document.getElementById('results');
+function drawer(open){
+  side.classList.toggle('open',open);
+  scrim.hidden=!open;
+  mfilter.setAttribute('aria-expanded',open);
+}
+mfilter.onclick=()=>drawer(!side.classList.contains('open'));
+scrim.onclick=()=>drawer(false);
+document.getElementById('rclose').onclick=()=>{results.classList.remove('up');clearSel();};
+addEventListener('keydown',e=>{if(e.key==='Escape'){drawer(false);results.classList.remove('up');}});
 
 const f=document.getElementById('from'),t=document.getElementById('to');
 function years(){
