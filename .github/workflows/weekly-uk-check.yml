@@ -1,12 +1,15 @@
-name: Weekly place-song check (US)
+name: Weekly place-song check (UK)
 
 on:
   schedule:
-    - cron: "0 14 * * 3"   # Wednesdays 14:00 UTC — Billboard dates charts to Saturday
+    - cron: "0 10 * * 6"   # Saturdays 10:00 UTC — Official Charts publishes Friday evenings
   workflow_dispatch:
     inputs:
-      weeks_back:
-        description: "How many of the latest Hot 100 weeks to read"
+      uk_since:
+        description: "Backfill: read every week since this date (YYYY-MM-DD). Leave blank for the latest week."
+        default: ""
+      uk_weeks:
+        description: "Otherwise, how many of the latest weeks to read"
         default: "1"
 
 permissions:
@@ -14,7 +17,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: data-writes          # never run alongside the UK check or an apply
+  group: data-writes
   cancel-in-progress: false
 
 jobs:
@@ -25,13 +28,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - run: pip install requests beautifulsoup4
 
       - name: Look for new songs that name a place
         id: scan
         env:
-          WEEKS_BACK: ${{ inputs.weeks_back || '1' }}
+          UK_SINCE: ${{ inputs.uk_since }}
+          UK_WEEKS: ${{ inputs.uk_weeks || '1' }}
           ISSUE_BODY: ${{ runner.temp }}/issue.md
-        run: python scripts/find_new_place_songs.py
+        run: python scripts/find_new_uk_place_songs.py
 
       - name: Validate data/songs.csv
         run: python scripts/validate_data.py
@@ -40,11 +45,11 @@ jobs:
         run: |
           git config user.name "songs-about-places bot"
           git config user.email "actions@github.com"
-          git add data/songs.csv review/us_candidates.csv
+          git add data/songs.csv review/uk_candidates.csv
           if git diff --staged --quiet; then
             echo "Nothing changed."
           else
-            git commit -m "US weekly check: ${{ steps.scan.outputs.new }} new candidate(s), ${{ steps.scan.outputs.peaks }} peak update(s)"
+            git commit -m "UK weekly check: ${{ steps.scan.outputs.new }} new candidate(s), ${{ steps.scan.outputs.peaks }} peak update(s)"
             git pull --rebase
             git push
           fi
@@ -55,5 +60,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh issue create \
-            --title "Review ${{ steps.scan.outputs.new }} US candidate place-song row(s)" \
+            --title "Review ${{ steps.scan.outputs.new }} UK candidate place-song row(s)" \
             --body-file "${{ runner.temp }}/issue.md"
