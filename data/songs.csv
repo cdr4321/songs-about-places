@@ -233,7 +233,7 @@
 1958,The All American Boy,Bill Parsons,"United States, North America",Country,Demonym,38.8951,-77.0364,2,,22,,,,,,,,,,,,
 1958,The Hawaiian Wedding Song (Ke Kali Nei Au),Andy Williams,"Hawaii, United States, North America",State/Region,Demonym,21.094,-157.498,11,,,,,,,,,,,,,,
 1958,Tulips from Amsterdam,Max Bygraves,"Amsterdam, The Netherlands, Europe",City,Direct,52.37403,4.88969,,,3,,,,,,,,,,,,
-1958,Woman from Liberia,Jimmie Rodgers,"Liberia, Africa",Country,Direct,10.63517,-85.43779,,,18,,,,,,,,,,,,
+1958,Woman from Liberia,Jimmie Rodgers,"Liberia, Africa",Country,Direct,6.5,-9.5,,,18,,,,,,,,,,,,
 1959,77 Sunset Strip,The Big Sound Of Don Ralke,"Sunset Strip, Los Angeles, California, United States, North America",Street/Landmark,Direct,34.09,-118.385,69,,,,,,,,,,,,,,
 1959,Back in the U.S.A.,Chuck Berry,"United States, North America",Country,Direct,38.8951,-77.0364,37,,,2090,,,,,,,,,,,
 1959,Battle of New Orleans,Johnny Horton,"New Orleans, Louisiana, United States, North America",City,Direct,30.0686,-89.939,,,16,,,,,,,,,,,,
@@ -1599,7 +1599,7 @@
 2010,The Way We're Made (Made in England),Missing Andy,"England, United Kingdom, Europe",Country,Direct,51.5074,-0.1278,,,38,,,,,,,,,,,,
 2010,Tokyo (Vampires & Wolves),The Wombats,"Tokyo, Japan, Asia",City,Direct,35.6895,139.6917,,,23,,,,,,,,,,,,
 2010,Waka Waka (This Time for Africa),Shakira ft. Freshlyground,Africa,Continent/Region,Direct,1.6508,17.6791,38,,21,,,,,,,,,,,y,
-2011,Calgary,Bon Iver,"Calgary, Canada, North America",City,Direct,51.05011,-114.08529,,,,3528,,,,,,,,,,,
+2011,Calgary,Bon Iver,"Calgary, Alberta, Canada, North America",City,Direct,51.05011,-114.08529,,,,3528,,,,,,,,,,,
 2011,California,EMA,"California, United States, North America",State/Region,Direct,36.116,-119.682,,,,2488,,,,,,,,,,,
 2011,California King Bed,Rihanna,"California, United States, North America",State/Region,Direct,36.116,-119.682,37,,8,,,,,,,,,,,,
 2011,Freedom for Palestine,Oneworld,"Palestine, Asia",Country,Direct,31.9522,35.2332,,,79,,,,,,,,,,,,
@@ -1628,7 +1628,7 @@
 2012,Vegas Girl,Conor Maynard,"Las Vegas, Nevada, United States, North America",City,Nickname,36.2277,-115.264,,,4,,,,,,,,,,,,
 2013,American Girl,Bonnie McKee,"United States, North America",Country,Demonym,38.8951,-77.0364,87,,,,,,,,,,,,,,
 2013,Berlin,Ry X,"Berlin, Germany, Europe",City,Direct,52.5244,13.4105,,,38,,,,,,,,,,,,
-2013,Break from Toronto,PARTYNEXTDOOR,"Toronto, Canada, North America",City,Direct,43.70643,-79.39864,,,,,,,,,,,,,,y,
+2013,Break from Toronto,PARTYNEXTDOOR,"Toronto, Ontario, Canada, North America",City,Direct,43.70643,-79.39864,,,,,,,,,,,,,,y,
 2013,Budapest,George Ezra,"Budapest, Hungary, Europe",City,Direct,47.4984,19.0404,32,89,3,7600,,,,,,,,,,y,
 2013,Carolina,Parmalee,"The Carolinas, United States, North America",State/Region,Direct,34.8,-79.5,36,,,,,,,,,,,,,,
 2013,Chinese Food,Alison Gold,"China, Asia",Country,Demonym,39.9075,116.3972,29,,,,,,,,,,,,,,
@@ -1696,7 +1696,7 @@
 2018,Otra Noche En Miami,Bad Bunny,"Miami, Florida, United States, North America",City,Direct,25.7752,-80.2086,,,,,,,,,,,,,,y,
 2018,Tennessee Rain,Addison Agen,"Tennessee, United States, North America",State/Region,Direct,35.747,-86.692,67,,,,,,,,,,,,,,
 2018,This Is America,Childish Gambino,"United States, North America",Country,Direct,38.8951,-77.0364,1,51,6,202,,,,,,,,,,,
-2018,Venice Bitch,Lana Del Rey,"Venice, California, United States, North America",City,Direct,45.43713,12.33265,,,,1697,,,,,,,,,,,
+2018,Venice Bitch,Lana Del Rey,"Venice, Los Angeles, California, United States, North America",City,Direct,33.990833,-118.459167,,,,1697,,,,,,,,,,,
 2018,Yosemite,Travis Scott,"Yosemite, California, United States, North America",Water/Natural Feature,Direct,37.8651,-119.5383,25,,93,,,,,,,,,,,y,
 2019,4PM in Calabasas,Drake,"Calabasas, California, United States, North America",City,Direct,34.1338,-118.6689,,,72,,,,,,,,,,,,
 2019,Costa Rica,"Dreamville ft. BAS, JID, Guapdad 4000, Reese LAFLARE, Jace, Mez, Smokepurpp, Buddy and Ski Mask The Slump God","Costa Rica, North America",Country,Direct,9.9281,-84.0907,75,,,,,,,,,,,,,,
@@ -1818,3 +1818,34 @@
 2026,No Scotland No Party,Nick Morgan,"Scotland, United Kingdom, Europe",Country,Direct,55.9533,-3.1883,,,74,,,,,,,,,,,,
 2026,Jamaican (Bam Bam),Hugel/ Solto,"Jamaica, North America",Country,Demonym,17.997,-76.7936,,,34,,,,,,,,,,,,
 2026,The Puerto Rico Song,Saxboy Billy,"Puerto Rico, United States, North America",State/Region,Direct,18.2208,-66.5901,,,81,,,,,,,,,,,,
+2007,"New York, I Love You but You're Bringing Me Down",LCD Soundsystem,"New York, New York, United States, North America",City,Direct,40.6643,-73.9385,,,,,,,,,,,,,,,y
+1975,Lakeside Park,Rush,"Lakeside Park, St. Catharines, Ontario, Canada, North America",Street/Landmark,Direct,43.201878,-79.268056,,,,,,,,,,,,,,,y
+1981,YYZ,Rush,"Toronto Pearson International Airport, Mississauga, Ontario, Canada, North America",Street/Landmark,Nickname,43.676111,-79.630556,,,,,,,,,,,,,,,y
+1990,Jet City Woman,Queensryche,"Seattle, Washington, United States, North America",City,Nickname,47.6205,-122.3509,,,,,,,,,,,,,,,y
+2000,Night Falls on Hoboken,Yo La Tengo,"Hoboken, New Jersey, United States, North America",City,Direct,40.745,-74.0325,,,,,,,,,,,,,,,y
+1972,New York's Not My Home,Jim Croce,"New York, New York, United States, North America",City,Direct,40.6643,-73.9385,,,,,,,,,,,,,,,y
+2015,Wichita Falls,American Aquarium,"Wichita Falls, Texas, United States, North America",City,Direct,33.912167,-98.49475,,,,,,,,,,,,,,,y
+2011,Leavin' Stephenville,Kyle Park,"Stephenville, Texas, United States, North America",City,Direct,32.209722,-98.2375,,,,,,,,,,,,,,,y
+1956,Folsom Prison Blues,Johnny Cash,"Folsom Prison, Folsom, California, United States, North America",Street/Landmark,Direct,38.695,-121.1625,5,,,198,,,Y,,,,Y,,Y,y,y
+1939,Take the 'A' Train,Duke Ellington,"A Train, New York, New York, United States, North America",Street/Landmark,Direct,40.82404,-73.944769,,,,760,,,Y,,32,16,,,,,y
+1999,Surfin' in Tofino,The Planet Smashers,"Tofino, British Columbia, Canada, North America",City,Direct,49.153056,-125.904444,,,,,,,,,,,,,,,y
+2018,Mount St. Helens is about to Blow Up,Bill Wurtz,"Mount St. Helens, Washington, United States, North America",Water/Natural Feature,Direct,46.1912,-122.1944,,,,,,,,,,,,,,,y
+1975,Carrickfergus,The Dubliners,"Carrickfergus, Northern Ireland, United Kingdom, Europe",City,Direct,54.713611,-5.8075,,,,,,,,,,,,,,,y
+1982,The Fields of Athenry,Paddy Reilly,"Athenry, Galway, Ireland, Europe",City,Direct,53.3,-8.746,,,,,,,,,,,,,,,y
+1963,Il neige sur Liege,Jacques Brel,"Liege, Belgium, Europe",City,Direct,50.639722,5.570556,,,,,,,,,,,,,,,y
+1980,"How Are Things in Clay, Kentucky?",The Statler Brothers,"Clay, Kentucky, United States, North America",City,Direct,37.476389,-87.820278,,,,,,,,,,,,,,,y
+2010,Colorado,Paper Bird,"Colorado, United States, North America",State/Region,Direct,39.059,-105.311,,,,,,,,,,,,,,,y
+2006,Colorado,Grizzly Bear,"Colorado, United States, North America",State/Region,Direct,39.059,-105.311,,,,,,,,,,,,,,,y
+1972,Cannock Chase,Labi Siffre,"Cannock Chase, Staffordshire, England, United Kingdom, Europe",Water/Natural Feature,Direct,52.746,-2.001,,,,,,,,,,,,,,,y
+2006,Lubbock or Leave it,The Chicks,"Lubbock, Texas, United States, North America",City,Direct,33.585,-101.845,,,,,,,,,,,,,,,y
+2025,Wanted Man in New Jersey,John Cozz and Ken De Poto,"New Jersey, United States, North America",State/Region,Direct,40.298,-74.521,,,,,,,,,,,,,,,y
+2025,Lord Let Me Die in Essex County,Chris Gethard and John Cozz,"Essex County, New Jersey, United States, North America",State/Region,Direct,40.79,-74.25,,,,,,,,,,,,,,,y
+2023,friend of the jersey devil,John Cozz,"New Jersey, United States, North America",State/Region,Nickname,40.298,-74.521,,,,,,,,,,,,,,,y
+2023,the passaic river,John Cozz,"Passaic River, New Jersey, United States, North America",Water/Natural Feature,Direct,40.712778,-74.118889,,,,,,,,,,,,,,,y
+2019,Catskills,John Cozz,"Catskill Mountains, New York, United States, North America",Water/Natural Feature,Direct,41.998611,-74.386389,,,,,,,,,,,,,,,y
+2003,Hackensack,Fountains of Wayne,"Hackensack, New Jersey, United States, North America",City,Direct,40.889398,-74.045698,,,,,,,,,,,,,,,y
+1993,New Jersey,Red House Painters,"New Jersey, United States, North America",State/Region,Direct,40.298,-74.521,,,,,,,,,,,,,,,y
+2006,So Jersey,The Bouncing Souls,"New Jersey, United States, North America",State/Region,Nickname,40.298,-74.521,,,,,,,,,,,,,,,y
+1999,I Like Jersey Best,John Pizzarelli,"New Jersey, United States, North America",State/Region,Nickname,40.298,-74.521,,,,,,,,,,,,,,,y
+1960,Jersey City,Bobby Long,"Jersey City, New Jersey, United States, North America",City,Direct,40.71,-74.06,,,,,,,,,,,,,,,y
+1986,Jersey Girl,Bruce Springsteen,"New Jersey, United States, North America",State/Region,Nickname,40.298,-74.521,,,,,,,,,,,,,,,y
