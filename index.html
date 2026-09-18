@@ -50,11 +50,22 @@
   .chip[aria-pressed="true"]{background:var(--dial);border-color:var(--dial);color:#14130F}
   .chip:hover{border-color:var(--dial-dim);color:var(--ink)}
   .chip[aria-pressed="true"]:hover{color:#14130F}
+  .qwrap{position:relative}
   input[type=search]{
-    width:100%;padding:9px 11px;background:var(--night-2);border:1px solid var(--rule);
+    width:100%;padding:9px 34px 9px 11px;background:var(--night-2);border:1px solid var(--rule);
     border-radius:2px;color:var(--ink);font:14px "Spline Sans",sans-serif
   }
   input[type=search]::placeholder{color:var(--mute)}
+  /* the browser's own clear button is nearly invisible on this background */
+  input[type=search]::-webkit-search-cancel-button,
+  input[type=search]::-webkit-search-decoration{-webkit-appearance:none;appearance:none}
+  #qclr{
+    position:absolute;top:50%;right:6px;transform:translateY(-50%);
+    width:24px;height:24px;padding:0;border:0;border-radius:50%;background:transparent;
+    color:var(--dial);font:400 20px/22px "Spline Sans",sans-serif;cursor:pointer
+  }
+  #qclr:hover{background:rgba(233,162,59,.16)}
+  #qclr[hidden]{display:none}
   .yrs{display:flex;justify-content:space-between;font:500 13px "Barlow Condensed",sans-serif;color:var(--dial);letter-spacing:.06em}
   /* two range inputs stacked on one track so it reads as a single control */
   .dual{position:relative;height:34px;margin-top:6px}
@@ -196,26 +207,44 @@
     #scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1100;border:0}
     .controls{overflow:visible;flex:none}
     .tally{display:none}
-    /* song list becomes a bottom sheet */
+    /* song list becomes a bottom sheet you can drag up and down */
     #results{
-      position:fixed;left:0;right:0;bottom:0;max-height:62dvh;z-index:1150;
+      position:fixed;left:0;right:0;bottom:0;z-index:1150;
+      height:var(--sh,62dvh);max-height:88dvh;
       background:var(--panel);border-top:1px solid var(--rule);
       border-radius:12px 12px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.5);
       transform:translateY(101%);transition:transform .22s ease;overflow-y:auto
     }
     #results.up{transform:translateY(0)}
-    .rhead{padding:15px 18px 9px;border-radius:12px 12px 0 0}
+    #results.dragging{transition:none}
+    .rhead{
+      padding:16px 52px 9px 18px;border-radius:12px 12px 0 0;
+      position:sticky;top:0;z-index:2;background:var(--panel);
+      touch-action:none;cursor:grab;user-select:none
+    }
     .rhead:before{
       content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);
-      width:34px;height:4px;border-radius:2px;background:var(--rule)
+      width:40px;height:5px;border-radius:3px;background:var(--dial-dim);opacity:.65
     }
     #rclose{
-      display:block;position:absolute;top:12px;right:12px;width:32px;height:32px;
-      background:transparent;border:1px solid var(--rule);border-radius:50%;
-      color:var(--mute);font-size:19px;line-height:1
+      display:flex;align-items:center;justify-content:center;
+      position:absolute;top:12px;right:12px;width:34px;height:34px;
+      background:transparent;border:1px solid rgba(233,162,59,.45);border-radius:50%;
+      color:var(--dial);font-size:15px;line-height:1
     }
+    /* brings the list back after it has been minimised */
+    #reopen{
+      display:none;position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:1140;
+      padding:10px 16px;border-radius:999px;border:1px solid rgba(233,162,59,.5);
+      background:var(--panel);color:var(--dial);box-shadow:0 6px 18px rgba(0,0,0,.5);
+      font:500 12px/1 "Barlow Condensed",sans-serif;letter-spacing:.09em;text-transform:uppercase
+    }
+    #reopen.show{display:block}
     .song{padding:11px 18px}
     .why{width:22px;height:22px;font-size:12px;line-height:20px}
+    /* keep the last rows clear of the browser's own floating toolbar */
+    #rlist{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 76px)}
+    #reopen{bottom:calc(env(safe-area-inset-bottom,0px) + 76px)}
   }
 </style>
 </head>
@@ -229,17 +258,20 @@
     <span id="mcount">—</span>
   </div>
   <div id="scrim" hidden></div>
+  <button id="reopen" type="button">Show songs &#9650;</button>
   <aside id="side">
     <header>
-      <div class="eyebrow" id="eyebrow">Charts &amp; the canon</div>
       <h1>Songs About Places</h1>
-      <p class="sub" id="sub">Songs that name somewhere real. Tap a marker to hear them.</p>
+      <p class="sub" id="sub">Notable songs that mention a place in their title. Tap a marker to hear them.</p>
     </header>
 
     <div class="controls">
       <div class="grp">
         <label class="lbl" for="q">Find a place</label>
-        <input type="search" id="q" placeholder="Memphis, Africa, Sinatra, Harlem…" autocomplete="off" />
+        <div class="qwrap">
+          <input type="search" id="q" placeholder="Memphis, Africa, Sinatra, Harlem…" autocomplete="off" />
+          <button type="button" id="qclr" aria-label="Clear search" hidden>&#215;</button>
+        </div>
       </div>
 
       <div class="grp">
@@ -269,7 +301,7 @@
       </div>
 
       <div class="foot">
-        <p>Songs are here because they reached the US or UK singles charts, or appear on a major list of great songs. Tap or hover the <span aria-hidden="true">?</span> beside a title to see why.</p>
+        <p>Why was a particular song included? Tap the <span aria-hidden="true">?</span> beside the title to see why we consider it notable.</p>
         <p>Something incorrect or missing? Let me know.</p>
         <a class="contact" href="https://www.chrisdallariva.com/contact"
            target="_blank" rel="noopener">Get in touch</a>
@@ -280,7 +312,7 @@
 
     <div id="results">
       <div class="rhead">
-        <button id="rclose" type="button" aria-label="Close song list">&times;</button>
+        <button id="rclose" type="button" aria-label="Minimise song list" title="Minimise">&#9660;</button>
         <h2 id="rt">Nothing selected</h2><p id="rs">Pick a marker to list its songs.</p>
       </div>
       <div id="rlist"><p class="empty">Every marker is a place named in a song title. Bigger markers carry more songs.<br><br>Something incorrect or missing? <a href="https://www.chrisdallariva.com/contact" target="_blank" rel="noopener" style="color:var(--dial)">Let me know</a>.</p></div>
@@ -311,7 +343,7 @@ const REASONS=[
   ['acclaimed_music','AcclaimedMusic.net 10k','rank'],
   ['national_recording_registry','National Recording Registry','flag'],
   ['grammy_hall_of_fame','Grammy Hall of Fame','flag'],
-  ['spotify_popular','Spotify popular','flag'],
+  ['spotify_popular','Top Song on Spotify','flag'],
   ['user_submission','Reader submission','flag'],
 ];
 const CONTINENTS=new Set(['North America','South America','Europe','Asia','Africa','Oceania','Antarctica']);
@@ -422,7 +454,7 @@ function draw(){
   document.getElementById('np').textContent=vis.length;
   document.getElementById('ns').textContent=nSongs;
   document.getElementById('mcount').textContent=nSongs+' songs';
-  if(state.q.trim()&&!state.sel) showMatches(vis,nSongs);
+  if(state.q.trim()&&!state.sel){ showMatches(vis,nSongs); fitTo(vis); }
   if(state.sel){ const still=vis.find(p=>p.p===state.sel.p); still?select(still,true):clearSel(); }
   if(!vis.length&&!state.sel){
     document.getElementById('rt').textContent=state.q.trim()?'No matches':'Nothing shown';
@@ -433,6 +465,17 @@ function draw(){
        :state.ments.size===0?'No mention types selected — tap <b>All</b> under “How it’s named”.'
        :'Nothing matches the current filters.')+'</p>';
   }
+}
+
+// move the map to the places a search matched, without zooming in absurdly far
+let fitKey='';
+function fitTo(vis){
+  const key=state.q.trim().toLowerCase()+'|'+vis.map(p=>p.p).join('|');
+  if(!vis.length||key===fitKey) return;
+  fitKey=key;
+  const b=L.latLngBounds(vis.map(p=>[p.lat,p.lon]));
+  const sheetPx=mob()&&results.classList.contains('up') ? results.getBoundingClientRect().height : 0;
+  map.fitBounds(b,{padding:[36,36],paddingBottomRight:[0,sheetPx],maxZoom:vis.length===1?8:7,animate:true});
 }
 
 function showMatches(vis,nSongs){
@@ -448,7 +491,7 @@ function showMatches(vis,nSongs){
   document.getElementById('rlist').innerHTML = cap.length
     ? cap.map(({s,p})=>songRow(s,p.p)).join('')
     : '<p class="empty">Nothing matches that. Try a place, a region like Africa or Europe, a song title, or an artist.</p>';
-  if(mob()) results.classList.add('up');
+  if(mob()){ sheetCount(); sheet(true, cap.length<=3 ? SMALL : HALF); }
 }
 function songRow(s,placeName){
   const i=SONGS.push(s)-1;
@@ -470,11 +513,11 @@ function select(p,keep){
   document.querySelectorAll('.dot.on').forEach(e=>e.classList.remove('on'));
   const m=markers.get(p.p); if(m&&m._icon) m._icon.querySelector('.dot')?.classList.add('on');
   if(!keep) document.getElementById('results').scrollTop=0;
-  if(mob()){ drawer(false); results.classList.add('up'); }
+  if(mob()){ drawer(false); sheetCount(); sheet(true, p.f.length<=3 ? SMALL : HALF); }
 }
 function clearSel(){
   state.sel=null;
-  if(mob()) results.classList.remove('up');
+  if(mob()){ results.classList.remove('up'); reopen.classList.remove('show'); }
   document.getElementById('rt').textContent='Nothing selected';
   document.getElementById('rs').textContent='Pick a marker to list its songs.';
   document.getElementById('rlist').innerHTML='<p class="empty">Every marker is a place named in a song title. Bigger markers carry more songs.</p>';
@@ -491,8 +534,47 @@ function drawer(open){
 }
 mfilter.onclick=()=>drawer(!side.classList.contains('open'));
 scrim.onclick=()=>drawer(false);
-document.getElementById('rclose').onclick=()=>{results.classList.remove('up');clearSel();};
-addEventListener('keydown',e=>{if(e.key==='Escape'){drawer(false);results.classList.remove('up');}});
+// --- the bottom sheet: open at a sensible height, drag to resize, minimise and restore ---
+const reopen=document.getElementById('reopen'), rhead=document.querySelector('.rhead');
+const FULL=88, HALF=62, SMALL=34;           // heights as a percentage of the viewport
+function sheet(open,pct){
+  if(!mob()) return;
+  if(pct) results.style.setProperty('--sh',pct+'dvh');
+  results.classList.toggle('up',open);
+  reopen.classList.toggle('show',!open&&hasRows());
+  if(open) hideWhy();
+}
+const hasRows=()=>!!document.querySelector('#rlist .song');
+function sheetCount(){
+  const n=document.querySelectorAll('#rlist .song').length;
+  reopen.textContent=(n?'Show '+n+(n===1?' song':' songs'):'Show songs')+' \u25B2';
+}
+document.getElementById('rclose').onclick=()=>{ sheet(false); sheetCount(); };
+reopen.onclick=()=>sheet(true);
+addEventListener('keydown',e=>{if(e.key==='Escape'){drawer(false);sheet(false);}});
+
+// drag the header to raise or lower the sheet
+let drag=null;
+rhead.addEventListener('pointerdown',e=>{
+  if(!mob()||e.target.closest('button')) return;
+  drag={y:e.clientY,h:results.getBoundingClientRect().height};
+  results.classList.add('dragging');
+  rhead.setPointerCapture(e.pointerId);
+});
+rhead.addEventListener('pointermove',e=>{
+  if(!drag) return;
+  const vh=innerHeight, pct=Math.max(12,Math.min(FULL,(drag.h-(e.clientY-drag.y))/vh*100));
+  results.style.setProperty('--sh',pct+'dvh');
+});
+rhead.addEventListener('pointerup',e=>{
+  if(!drag) return;
+  const pct=results.getBoundingClientRect().height/innerHeight*100;
+  results.classList.remove('dragging');
+  drag=null;
+  if(pct<24){ sheet(false); sheetCount(); return; }
+  sheet(true, pct>(FULL+HALF)/2 ? FULL : pct>(HALF+SMALL)/2 ? HALF : SMALL);
+});
+rhead.addEventListener('pointercancel',()=>{results.classList.remove('dragging');drag=null;});
 
 const f=document.getElementById('from'),t=document.getElementById('to'),
       dfill=document.getElementById('dfill');
@@ -512,10 +594,17 @@ function years(){
 }
 f.oninput=years; t.oninput=years;
 years();
-document.getElementById('q').oninput=e=>{
+const qbox=document.getElementById('q'), qclr=document.getElementById('qclr');
+qbox.oninput=e=>{
   state.q=e.target.value;
+  qclr.hidden=!state.q;
   if(!state.q.trim()&&!state.sel) clearSel();
   draw();
+};
+qclr.onclick=()=>{
+  qbox.value=''; state.q=''; qclr.hidden=true;
+  if(!state.sel) clearSel();
+  draw(); qbox.focus();
 };
 map.on('click',clearSel);
 
@@ -622,9 +711,8 @@ Promise.all([getText('data/songs.csv'),getText('data/place_aliases.csv').catch((
   MIN=Math.min(...ys); MAX=Math.max(...ys);
   [f,t].forEach(el=>{el.min=MIN; el.max=MAX;});
   f.value=MIN; t.value=MAX;
-  document.getElementById('eyebrow').textContent='Charts & the canon · '+MIN+'–'+MAX;
   document.getElementById('sub').textContent=
-    n.toLocaleString('en-US')+' songs that name somewhere real. Tap a marker to hear them.';
+    n.toLocaleString('en-US')+' notable songs that mention a place in their title. Tap a marker to hear them.';
   years();
  })
  .catch(()=>{document.getElementById('rlist').innerHTML=
