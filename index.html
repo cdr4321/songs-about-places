@@ -180,6 +180,7 @@
   /* ---------- mobile: map first, filters in a drawer, songs in a sheet ---------- */
   #mtop{display:none}
   #rclose{display:none}
+  #reopen{display:none}
   @media (max-width:680px){
     .wrap{display:block;height:100dvh;position:relative}
     #mtop{
@@ -234,7 +235,7 @@
     }
     /* brings the list back after it has been minimised */
     #reopen{
-      display:none;position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:1140;
+      position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:1140;
       padding:10px 16px;border-radius:999px;border:1px solid rgba(233,162,59,.5);
       background:var(--panel);color:var(--dial);box-shadow:0 6px 18px rgba(0,0,0,.5);
       font:500 12px/1 "Barlow Condensed",sans-serif;letter-spacing:.09em;text-transform:uppercase
@@ -456,6 +457,8 @@ function draw(){
   document.getElementById('mcount').textContent=nSongs+' songs';
   if(state.q.trim()&&!state.sel){ showMatches(vis,nSongs); fitTo(vis); }
   if(state.sel){ const still=vis.find(p=>p.p===state.sel.p); still?select(still,true):clearSel(); }
+  // the list is drawn once before the data arrives; put it back to its idle text afterwards
+  if(vis.length&&!state.sel&&!state.q.trim()) idle();
   if(!vis.length&&!state.sel){
     document.getElementById('rt').textContent=state.q.trim()?'No matches':'Nothing shown';
     document.getElementById('rs').textContent=state.cats.size===0||state.ments.size===0
@@ -515,12 +518,15 @@ function select(p,keep){
   if(!keep) document.getElementById('results').scrollTop=0;
   if(mob()){ drawer(false); sheetCount(); sheet(true, p.f.length<=3 ? SMALL : HALF); }
 }
-function clearSel(){
-  state.sel=null;
-  if(mob()){ results.classList.remove('up'); reopen.classList.remove('show'); }
+function idle(){
   document.getElementById('rt').textContent='Nothing selected';
   document.getElementById('rs').textContent='Pick a marker to list its songs.';
   document.getElementById('rlist').innerHTML='<p class="empty">Every marker is a place named in a song title. Bigger markers carry more songs.</p>';
+}
+function clearSel(){
+  state.sel=null;
+  if(mob()){ results.classList.remove('up'); reopen.classList.remove('show'); }
+  idle();
 }
 
 // --- mobile drawer + bottom sheet ---
