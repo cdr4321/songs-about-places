@@ -1,8 +1,8 @@
 ﻿chart,chart_week,year,title,artist,weekly_peak,place,place_category,mention_type,matched_text,latitude,longitude,note,approved
-uk,2025-09-05,2025,London,Skepta & Fred Again,70,"London, England, United Kingdom, Europe",City,Direct,london,51.5085,-0.1257,,
-uk,2025-10-17,2025,Sirens (From Ireland),Skepta ft. Finessekid,66,"Ireland, Europe",Country,Direct,ireland,53.3331,-6.2489,,
-uk,2026-01-09,2026,California Rain,James Marriott,22,"California, United States, North America",State/Region,Direct,california,36.116,-119.682,,
-uk,2026-02-06,2026,Streets of Minneapolis,Bruce Springsteen,92,"Minneapolis, Minnesota",City,Direct,minneapolis,,,"NEW PLACE — write the full chain (City, State, Country, Continent) in place and fill latitude/longitude",
-uk,2026-06-19,2026,No Scotland No Party,Nick Morgan,74,"Scotland, United Kingdom, Europe",Country,Direct,scotland,55.9533,-3.1883,,
-uk,2026-06-26,2026,Jamaican (Bam Bam),Hugel/ Solto,34,"Jamaica, North America",Country,Demonym,jamaican,17.997,-76.7936,,
-uk,2026-06-26,2026,The Puerto Rico Song,Saxboy Billy,81,Puerto Rico,Country,Direct,puerto rico,,,"NEW PLACE — write the full chain (City, State, Country, Continent) in place and fill latitude/longitude",
+uk,2025-09-05,2025,London,Skepta & Fred Again,70,"London, England, United Kingdom, Europe",City,Direct,london,51.5085,-0.1257,,y
+uk,2025-10-17,2025,Sirens (From Ireland),Skepta ft. Finessekid,66,"Ireland, Europe",Country,Direct,ireland,53.3331,-6.2489,,y
+uk,2026-01-09,2026,California Rain,James Marriott,22,"California, United States, North America",State/Region,Direct,california,36.116,-119.682,,y
+uk,2026-02-06,2026,Streets of Minneapolis,Bruce Springsteen,92,"Minneapolis, Minnesota, United States, North America",City,Direct,minneapolis,44.9778,-93.2650,"NEW PLACE — write the full chain (City, State, Country, Continent) in place and fill latitude/longitude",y
+uk,2026-06-19,2026,No Scotland No Party,Nick Morgan,74,"Scotland, United Kingdom, Europe",Country,Direct,scotland,55.9533,-3.1883,,y
+uk,2026-06-26,2026,Jamaican (Bam Bam),Hugel/ Solto,34,"Jamaica, North America",Country,Demonym,jamaican,17.997,-76.7936,,y
+uk,2026-06-26,2026,The Puerto Rico Song,Saxboy Billy,81,"Puerto Rico, United States, North America",State/Region,Direct,puerto rico,18.2208,-66.5901,"NEW PLACE — write the full chain (City, State, Country, Continent) in place and fill latitude/longitude",y
