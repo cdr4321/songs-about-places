@@ -72,6 +72,7 @@
   }
   .song{cursor:pointer}
   .song:hover{background:rgba(233,162,59,.05)}
+  .song.static,.song.static:hover{cursor:default;background:none}
   #sclose{display:none}
   input[type=search]{
     width:100%;padding:9px 34px 9px 11px;background:var(--night-2);border:1px solid var(--rule);
@@ -288,6 +289,8 @@
       font:500 12px/1 "Barlow Condensed",sans-serif;letter-spacing:.09em;text-transform:uppercase
     }
     #reopen.show{display:block}
+    /* under 16px, iOS zooms the entire page when this field takes focus */
+    input[type=search]{font-size:16px;padding-top:11px;padding-bottom:11px}
     .song{padding:11px 18px}
     .why{width:22px;height:22px;font-size:12px;line-height:20px}
     /* keep the last rows clear of the browser's own floating toolbar */
@@ -603,8 +606,11 @@ function draw(){
   const nSongs=new Set(vis.flatMap(p=>p.f.map(s=>s.t+'\u0000'+s.a))).size;
   tallyText(nSongs,vis.length);
   document.getElementById('mcount').textContent=nSongs+' songs';
-  if(state.q.trim()&&!state.sel){ showMatches(vis,nSongs); fitTo(vis); }
-  if(state.sel){ const still=vis.find(p=>p.p===state.sel.p); still?select(still,true):clearSel(); }
+  // a selected place that no longer matches drops away first, so the results
+  // show in the same pass rather than waiting for the next keystroke
+  if(state.sel&&!vis.some(p=>p.p===state.sel.p)) clearSel();
+  if(state.sel){ const still=vis.find(p=>p.p===state.sel.p); select(still,true); }
+  else if(state.q.trim()){ showMatches(vis,nSongs); fitTo(vis); }
   // the list is drawn once before the data arrives; put it back to its idle text afterwards
   if(vis.length&&!state.sel&&!state.q.trim()) idle();
   if(!vis.length&&!state.sel){
@@ -662,9 +668,9 @@ function titleWithPlay(t){
          '<span class="play" aria-hidden="true"></span></span>';
 }
 
-function songRow(s,placeName,place){
+function songRow(s,placeName,place,fixed){
   const i=SONGS.push(s)-1;
-  return '<div class="song" data-place="'+esc(place||placeName||'')+'">'+
+  return '<div class="song'+(fixed?' static':'')+'" data-place="'+esc(place||placeName||'')+'">'+
     '<div class="yr">'+s.y+'</div><div>'+
     '<div class="trow"><a class="ttl" href="'+playUrl(s)+'" target="_blank" rel="noopener" '+
       'title="Find this song on '+esc(svcName())+'">'+titleWithPlay(s.t)+
@@ -681,7 +687,9 @@ function select(p,keep){
   state.sel=p; SONGS.length=0; hideWhy();
   document.getElementById('rt').textContent=label(p.p);
   document.getElementById('rs').textContent=p.c+' · '+p.f.length+(p.f.length===1?' song':' songs');
-  document.getElementById('rlist').innerHTML=p.f.map(s=>songRow(s,'',p.p)).join('');
+  // one song already: tapping a row would only zoom in on what you can see
+  const fixed=!!state.song||p.f.length<2;
+  document.getElementById('rlist').innerHTML=p.f.map(s=>songRow(s,'',p.p,fixed)).join('');
   document.querySelectorAll('.dot.on').forEach(e=>e.classList.remove('on'));
   const m=markers.get(p.p); if(m&&m._icon) m._icon.querySelector('.dot')?.classList.add('on');
   if(!keep) document.getElementById('results').scrollTop=0;
@@ -756,7 +764,13 @@ rclose.onclick=()=>{
   qbox.value=''; state.q=''; qclr.hidden=true;   // close = back to the idle panel
   clearSel(); draw();
 };
-rback.onclick=()=>{ state.sel=null; state.song=null; draw(); document.getElementById('results').scrollTop=0; };
+rback.onclick=()=>{
+  // one step back: a single song returns to its place, a place returns to the results
+  if(state.song) state.song=null;
+  else state.sel=null;
+  draw();
+  document.getElementById('results').scrollTop=0;
+};
 reopen.onclick=()=>sheet(true);
 addEventListener('keydown',e=>{if(e.key==='Escape'){drawer(false);sheet(false);}});
 
@@ -833,7 +847,7 @@ map.on('click',clearSel);
 document.getElementById('rlist').addEventListener('click',e=>{
   if(e.target.closest('a,.why')) return;
   const row=e.target.closest('.song[data-place]');
-  if(!row||!row.dataset.place) return;
+  if(!row||!row.dataset.place||row.classList.contains('static')) return;
   const p=VIS.find(x=>x.p===row.dataset.place);
   if(!p) return;
   const btn=row.querySelector('.why');
