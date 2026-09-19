@@ -51,6 +51,33 @@
   .chip:hover{border-color:var(--dial-dim);color:var(--ink)}
   .chip[aria-pressed="true"]:hover{color:#14130F}
   .qwrap{position:relative}
+  /* collapsible filter groups */
+  .gtoggle{
+    display:flex;align-items:center;gap:8px;width:100%;padding:0;background:none;border:0;
+    color:var(--foam);cursor:pointer;text-align:left
+  }
+  .gtoggle .lbl{margin:0}
+  .gtoggle .sum{margin-left:auto;color:var(--mute);font:400 12px "Spline Sans",sans-serif;letter-spacing:0}
+  .gtoggle .chev{color:var(--dial);font-size:10px;transition:transform .15s}
+  .gtoggle[aria-expanded="true"] .chev{transform:rotate(180deg)}
+  .gbody{margin-top:9px}
+  .gbody[hidden]{display:none}
+  .scope{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+  .scope .chip{padding:4px 8px;font-size:10.5px}
+  .svc{display:flex;align-items:center;gap:8px;margin-top:10px}
+  .svc select{
+    flex:1;padding:6px 8px;background:var(--night-2);border:1px solid var(--rule);border-radius:2px;
+    color:var(--ink);font:13px "Spline Sans",sans-serif
+  }
+  /* the ? as it appears beside a song title */
+  .qmark{
+    display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;
+    border:1px solid var(--mute);border-radius:50%;color:var(--mute);
+    font:600 10px/1 "Spline Sans",sans-serif;vertical-align:-2px
+  }
+  .song{cursor:pointer}
+  .song:hover{background:rgba(233,162,59,.05)}
+  #sclose{display:none}
   input[type=search]{
     width:100%;padding:9px 34px 9px 11px;background:var(--night-2);border:1px solid var(--rule);
     border-radius:2px;color:var(--ink);font:14px "Spline Sans",sans-serif
@@ -227,6 +254,12 @@
       content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);
       width:40px;height:5px;border-radius:3px;background:var(--dial-dim);opacity:.65
     }
+    #sclose{
+      display:flex;align-items:center;justify-content:center;
+      position:absolute;top:12px;right:12px;width:34px;height:34px;z-index:3;
+      background:var(--panel);border:1px solid rgba(233,162,59,.45);border-radius:50%;
+      color:var(--dial);font-size:19px;line-height:1
+    }
     #rclose{
       display:flex;align-items:center;justify-content:center;
       position:absolute;top:12px;right:12px;width:34px;height:34px;
@@ -273,36 +306,68 @@
           <input type="search" id="q" placeholder="Memphis, Africa, Sinatra, Harlem…" autocomplete="off" />
           <button type="button" id="qclr" aria-label="Clear search" hidden>&#215;</button>
         </div>
-      </div>
-
-      <div class="grp">
-        <div class="lblrow">
-          <span class="lbl">Kind of place</span>
-          <span class="setall"><button type="button" data-g="cats" data-v="1">All</button><button type="button" data-g="cats" data-v="0">None</button></span>
+        <div class="scope" id="fields" role="group" aria-label="Search in">
+          <span class="lbl" style="align-self:center;margin:0 2px 0 0">Search in</span>
         </div>
-        <div class="chips" id="cats"></div>
-      </div>
-
-      <div class="grp">
-        <div class="lblrow">
-          <span class="lbl">How it's named</span>
-          <span class="setall"><button type="button" data-g="ments" data-v="1">All</button><button type="button" data-g="ments" data-v="0">None</button></span>
-        </div>
-        <div class="chips" id="ments"></div>
-      </div>
-
-      <div class="grp">
-        <span class="lbl">Year released</span>
-        <div class="yrs"><span id="y0">–</span><span id="y1">–</span></div>
-        <div class="dual">
-          <div class="dtrack"></div><div class="dfill" id="dfill"></div>
-          <input type="range" id="from" min="1890" max="2030" value="1890" aria-label="Earliest year" />
-          <input type="range" id="to" min="1890" max="2030" value="2030" aria-label="Latest year" />
+        <div class="svc">
+          <label class="lbl" for="svc" style="margin:0">Play on</label>
+          <select id="svc" aria-label="Streaming service for song links"></select>
         </div>
       </div>
 
+      <div class="grp">
+        <button type="button" class="gtoggle" aria-expanded="false" aria-controls="b-cats">
+          <span class="lbl">Kind of place</span><span class="sum" id="sum-cats">All</span><span class="chev">&#9660;</span>
+        </button>
+        <div class="gbody" id="b-cats" hidden>
+          <div class="lblrow">
+            <span class="setall"><button type="button" data-g="cats" data-v="1">All</button><button type="button" data-g="cats" data-v="0">None</button></span>
+          </div>
+          <div class="chips" id="cats"></div>
+        </div>
+      </div>
+
+      <div class="grp">
+        <button type="button" class="gtoggle" aria-expanded="false" aria-controls="b-ments">
+          <span class="lbl">How it's named</span><span class="sum" id="sum-ments">All</span><span class="chev">&#9660;</span>
+        </button>
+        <div class="gbody" id="b-ments" hidden>
+          <div class="lblrow">
+            <span class="setall"><button type="button" data-g="ments" data-v="1">All</button><button type="button" data-g="ments" data-v="0">None</button></span>
+          </div>
+          <div class="chips" id="ments"></div>
+        </div>
+      </div>
+
+      <div class="grp">
+        <button type="button" class="gtoggle" aria-expanded="false" aria-controls="b-reasons">
+          <span class="lbl">Why it's here</span><span class="sum" id="sum-reasons">All</span><span class="chev">&#9660;</span>
+        </button>
+        <div class="gbody" id="b-reasons" hidden>
+          <div class="lblrow">
+            <span class="setall"><button type="button" data-g="reasons" data-v="1">All</button><button type="button" data-g="reasons" data-v="0">None</button></span>
+          </div>
+          <div class="chips" id="reasons"></div>
+        </div>
+      </div>
+
+      <div class="grp">
+        <button type="button" class="gtoggle" aria-expanded="false" aria-controls="b-years">
+          <span class="lbl">Year released</span><span class="sum" id="sum-years">–</span><span class="chev">&#9660;</span>
+        </button>
+        <div class="gbody" id="b-years" hidden>
+          <div class="yrs"><span id="y0">–</span><span id="y1">–</span></div>
+          <div class="dual">
+            <div class="dtrack"></div><div class="dfill" id="dfill"></div>
+            <input type="range" id="from" min="1890" max="2030" value="1890" aria-label="Earliest year" />
+            <input type="range" id="to" min="1890" max="2030" value="2030" aria-label="Latest year" />
+          </div>
+        </div>
+      </div>
+
+      <button id="sclose" type="button" aria-label="Close filters">&#215;</button>
       <div class="foot">
-        <p>Why was a particular song included? Tap the <span aria-hidden="true">?</span> beside the title to see why we consider it notable.</p>
+        <p>Why was a particular song included? Tap the <span class="qmark" aria-hidden="true">?</span> beside the title to see why we consider it notable.</p>
         <p>Something incorrect or missing? Let me know.</p>
         <a class="contact" href="https://www.chrisdallariva.com/contact"
            target="_blank" rel="noopener">Get in touch</a>
@@ -331,24 +396,38 @@ const MENTS=['Direct','Demonym','Nickname'];
 // Why a song is on the map: column in data/songs.csv, label shown in the ? popover,
 // and how to show the value ("peak"/"rank" print the number, "flag" means a y).
 const REASONS=[
-  ['us_weekly','US Weekly Hot 100','peak'],
-  ['us_yearly','US Yearly Hot 100','rank'],
-  ['uk_weekly','UK Singles Chart','peak'],
-  ['rolling_stone','Rolling Stone 500','rank'],
-  ['ascap','ASCAP 100','rank'],
-  ['npr','NPR 100','rank'],
-  ['blender','Blender 500 Songs Since You Were Born','rank'],
-  ['riaa','RIAA Songs of the 20th Century','rank'],
-  ['rock_hall','Rock Hall Songs that Shaped Rock','flag'],
-  ['time','Time 100','flag'],
-  ['acclaimed_music','AcclaimedMusic.net 10k','rank'],
-  ['national_recording_registry','National Recording Registry','flag'],
-  ['grammy_hall_of_fame','Grammy Hall of Fame','flag'],
-  ['spotify_popular','Top Song on Spotify','flag'],
-  ['user_submission','Reader submission','flag'],
+  ['us_weekly','US Weekly Hot 100','peak','US Hot 100'],
+  ['us_yearly','US Yearly Hot 100','rank','US year-end'],
+  ['uk_weekly','UK Singles Chart','peak','UK Singles'],
+  ['rolling_stone','Rolling Stone 500','rank','Rolling Stone 500'],
+  ['ascap','ASCAP 100','rank','ASCAP 100'],
+  ['npr','NPR 100','rank','NPR 100'],
+  ['blender','Blender 500 Songs Since You Were Born','rank','Blender 500'],
+  ['riaa','RIAA Songs of the 20th Century','rank','RIAA 20th century'],
+  ['rock_hall','Rock Hall Songs that Shaped Rock','flag','Rock Hall 500'],
+  ['time','Time 100','flag','Time 100'],
+  ['acclaimed_music','AcclaimedMusic.net 10k','rank','AcclaimedMusic'],
+  ['national_recording_registry','National Recording Registry','flag','Recording Registry'],
+  ['grammy_hall_of_fame','Grammy Hall of Fame','flag','Grammy Hall of Fame'],
+  ['spotify_popular','Top Song on Spotify','flag','Top on Spotify'],
+  ['user_submission','User submission','flag','User submission'],
 ];
 const CONTINENTS=new Set(['North America','South America','Europe','Asia','Africa','Oceania','Antarctica']);
-const state={cats:new Set(CATS),ments:new Set(MENTS),from:1890,to:2030,q:'',sel:null};
+const SERVICES=[
+  ['youtube','YouTube',    q=>'https://www.youtube.com/results?search_query='+encodeURIComponent(q)],
+  ['spotify','Spotify',    q=>'https://open.spotify.com/search/'+encodeURIComponent(q)],
+  ['apple','Apple Music',  q=>'https://music.apple.com/search?term='+encodeURIComponent(q)],
+  ['tidal','Tidal',        q=>'https://tidal.com/search?q='+encodeURIComponent(q)],
+  ['audiomack','Audiomack',q=>'https://audiomack.com/search/'+encodeURIComponent(q)],
+];
+const FIELDS=[['place','Location'],['title','Song title'],['artist','Artist']];
+const REASON_COLS=REASONS.map(r=>r[0]);
+// sessionStorage is blocked in some cross-site iframes, so never let it throw
+const remember=(k,v)=>{try{sessionStorage.setItem(k,v);}catch(e){}};
+const recall=k=>{try{return sessionStorage.getItem(k);}catch(e){return null;}};
+const state={cats:new Set(CATS),ments:new Set(MENTS),reasons:new Set(REASON_COLS),
+             fields:new Set(FIELDS.map(f=>f[0])),from:1890,to:2030,q:'',sel:null,
+             svc:recall('svc')||'youtube'};
 const touch=matchMedia('(hover:none)').matches;
 let PLACES=[],layer,markers=new Map();
 const SONGS=[];   // songs currently listed, indexed by the ? buttons
@@ -370,37 +449,69 @@ L.tileLayer(ESRI+'World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{
 L.tileLayer(ESRI+'World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
   {maxZoom:16,detectRetina:true,opacity:.75}).addTo(map);
 
-function chips(el,list,set){
-  el.innerHTML='';
-  list.forEach(v=>{
+function chips(el,list,set,g){
+  el.querySelectorAll('.chip').forEach(c=>c.remove());
+  list.forEach(([v,label])=>{
     const b=document.createElement('button');
-    b.className='chip'; b.type='button'; b.textContent=v;
-    b.setAttribute('aria-pressed','true');
+    b.className='chip'; b.type='button'; b.textContent=label; b.dataset.v=v;
+    b.setAttribute('aria-pressed',set.has(v));
     b.onclick=()=>{
       set.has(v)?set.delete(v):set.add(v);
       b.setAttribute('aria-pressed',set.has(v));
-      draw();
+      summary(g); draw();
     };
     el.appendChild(b);
   });
 }
-chips(document.getElementById('cats'),CATS,state.cats);
-chips(document.getElementById('ments'),MENTS,state.ments);
+const GROUPS={
+  cats:   {set:state.cats,    values:CATS.map(v=>[v,v])},
+  ments:  {set:state.ments,   values:MENTS.map(v=>[v,v])},
+  reasons:{set:state.reasons, values:REASONS.map(r=>[r[0],r[3]])},
+  fields: {set:state.fields,  values:FIELDS},
+};
+Object.entries(GROUPS).forEach(([g,{set,values}])=>{
+  chips(document.getElementById(g),values,set,g); summary(g);
+});
 document.querySelectorAll('.setall button').forEach(b=>{
   b.onclick=()=>{
-    const g=b.dataset.g, on=b.dataset.v==='1';
-    const set=g==='cats'?state.cats:state.ments, list=g==='cats'?CATS:MENTS;
-    set.clear(); if(on) list.forEach(v=>set.add(v));
-    document.querySelectorAll('#'+g+' .chip').forEach(c=>c.setAttribute('aria-pressed',set.has(c.textContent)));
-    draw();
+    const g=b.dataset.g, {set,values}=GROUPS[g];
+    set.clear(); if(b.dataset.v==='1') values.forEach(([v])=>set.add(v));
+    document.querySelectorAll('#'+g+' .chip').forEach(c=>c.setAttribute('aria-pressed',set.has(c.dataset.v)));
+    summary(g); draw();
   };
 });
+
+// each filter group collapses, with a one-line summary of what it is set to
+function summary(g){
+  const el=document.getElementById('sum-'+g);
+  if(!el) return;
+  const {set,values}=GROUPS[g];
+  el.textContent=set.size===values.length?'All':set.size===0?'None':set.size+' of '+values.length;
+}
+document.querySelectorAll('.gtoggle').forEach(t=>{
+  t.onclick=()=>{
+    const open=t.getAttribute('aria-expanded')==='true';
+    t.setAttribute('aria-expanded',!open);
+    document.getElementById(t.getAttribute('aria-controls')).hidden=open;
+  };
+});
+
+// which streaming service the play links point at, remembered for the session
+const svcSel=document.getElementById('svc');
+SERVICES.forEach(([v,label])=>{
+  const o=document.createElement('option'); o.value=v; o.textContent=label; svcSel.appendChild(o);
+});
+svcSel.value=state.svc;
+svcSel.onchange=()=>{ state.svc=svcSel.value; remember('svc',state.svc); draw(); };
+const svcName=()=>(SERVICES.find(x=>x[0]===state.svc)||SERVICES[0])[1];
 
 function songsOf(p,q,placeHit){
   return p.s.filter(s=>{
     if(!state.ments.has(s.m)||s.y<state.from||s.y>state.to) return false;
+    if(!s.r.some(r=>state.reasons.has(r.col))) return false;
     if(!q||placeHit) return true;
-    return s.t.toLowerCase().includes(q)||s.a.toLowerCase().includes(q);
+    return (state.fields.has('title')&&s.t.toLowerCase().includes(q))
+        || (state.fields.has('artist')&&s.a.toLowerCase().includes(q));
   });
 }
 function visible(){
@@ -409,12 +520,12 @@ function visible(){
     if(!state.cats.has(p.c)) return null;
     // match the place name, its hierarchy (country, continent, state, aliases),
     // or any of its songs — so "Africa" surfaces Marrakesh, "UK" surfaces Liverpool
-    const placeHit=!q||p.k.includes(q);
+    const placeHit=!q||(state.fields.has('place')&&p.k.includes(q));
     const s=songsOf(p,q,placeHit);
     return s.length?{...p,f:s}:null;
   }).filter(Boolean);
 }
-const yt=s=>'https://www.youtube.com/results?search_query='+encodeURIComponent(s.t+' '+s.a);
+const playUrl=s=>((SERVICES.find(x=>x[0]===state.svc)||SERVICES[0])[2])(s.t+' '+s.a);
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // "Memphis, Tennessee, United States, North America" -> "Memphis, Tennessee, United States"
 const label=chain=>{const a=chain.split(', ');return a.length>1&&CONTINENTS.has(a[a.length-1])?a.slice(0,-1).join(', '):chain;};
@@ -422,8 +533,9 @@ const short=chain=>chain.split(', ')[0];
 
 function radius(n){return Math.min(26,7+Math.sqrt(n)*3.1);}
 
+let VIS=[];
 function draw(){
-  const vis=visible();
+  const vis=visible(); VIS=vis;
   if(layer) map.removeLayer(layer);
   markers.clear();
   layer=L.markerClusterGroup({
@@ -492,16 +604,17 @@ function showMatches(vis,nSongs){
     nSongs+(nSongs===1?' song':' songs')+' in '+vis.length+(vis.length===1?' place':' places')+
     (rows.length>80?' — first 80 shown':'');
   document.getElementById('rlist').innerHTML = cap.length
-    ? cap.map(({s,p})=>songRow(s,p.p)).join('')
+    ? cap.map(({s,p})=>songRow(s,p.p,p.p)).join('')
     : '<p class="empty">Nothing matches that. Try a place, a region like Africa or Europe, a song title, or an artist.</p>';
   if(mob()){ sheetCount(); sheet(true, cap.length<=3 ? SMALL : HALF); }
 }
-function songRow(s,placeName){
+function songRow(s,placeName,place){
   const i=SONGS.push(s)-1;
-  return '<div class="song"><div class="yr">'+s.y+'</div><div>'+
-    '<div class="trow"><a class="ttl" href="'+yt(s)+'" target="_blank" rel="noopener" '+
-      'title="Search YouTube for this song">'+esc(s.t)+'<span class="play" aria-hidden="true"></span>'+
-      '<span class="sr"> (opens a YouTube search)</span></a>'+
+  return '<div class="song" data-place="'+esc(place||placeName||'')+'">'+
+    '<div class="yr">'+s.y+'</div><div>'+
+    '<div class="trow"><a class="ttl" href="'+playUrl(s)+'" target="_blank" rel="noopener" '+
+      'title="Find this song on '+esc(svcName())+'">'+esc(s.t)+'<span class="play" aria-hidden="true"></span>'+
+      '<span class="sr"> (opens a '+esc(svcName())+' search)</span></a>'+
     '<button type="button" class="why" data-i="'+i+'" aria-expanded="false" aria-controls="whybox" '+
       'aria-label="Why '+esc(s.t)+' is on the map">?</button></div>'+
     '<div class="art">'+esc(s.a)+
@@ -512,7 +625,7 @@ function select(p,keep){
   state.sel=p; SONGS.length=0; hideWhy();
   document.getElementById('rt').textContent=label(p.p);
   document.getElementById('rs').textContent=p.c+' · '+p.f.length+(p.f.length===1?' song':' songs');
-  document.getElementById('rlist').innerHTML=p.f.map(s=>songRow(s,'')).join('');
+  document.getElementById('rlist').innerHTML=p.f.map(s=>songRow(s,'',p.p)).join('');
   document.querySelectorAll('.dot.on').forEach(e=>e.classList.remove('on'));
   const m=markers.get(p.p); if(m&&m._icon) m._icon.querySelector('.dot')?.classList.add('on');
   if(!keep) document.getElementById('results').scrollTop=0;
@@ -589,6 +702,8 @@ function years(){
   let a=+f.value,b=+t.value;
   if(a>b){ if(document.activeElement===f) b=a; else a=b; f.value=a; t.value=b; }
   state.from=a; state.to=b;
+  const sy=document.getElementById('sum-years');
+  if(sy) sy.textContent=(a===MIN&&b===MAX)?'All':a+'–'+b;
   document.getElementById('y0').textContent=a;
   document.getElementById('y1').textContent=b;
   const l=(a-MIN)/(MAX-MIN)*100, r=(b-MIN)/(MAX-MIN)*100;
@@ -614,11 +729,29 @@ qclr.onclick=()=>{
 };
 map.on('click',clearSel);
 
+// tapping a row anywhere but the title or the ? jumps to that place on the map
+document.getElementById('rlist').addEventListener('click',e=>{
+  if(e.target.closest('a,.why')) return;
+  const row=e.target.closest('.song[data-place]');
+  if(!row||!row.dataset.place) return;
+  const p=VIS.find(x=>x.p===row.dataset.place);
+  if(!p) return;
+  map.setView([p.lat,p.lon],Math.max(map.getZoom(),9),{animate:true});
+  if(state.sel&&state.sel.p===p.p) return;   // already listed: just move the map
+  select(p);
+});
+
+// Enter dismisses the on-screen keyboard rather than doing nothing
+qbox.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){ e.preventDefault(); qbox.blur(); if(mob()) drawer(false); }
+});
+document.getElementById('sclose').onclick=()=>drawer(false);
+
 // ---------- the ? popover ----------
 const whybox=document.getElementById('whybox');
 let whyBtn=null, whyAt=0;
 function reasonsHTML(s){
-  const li=s.r.map(([name,kind,v])=>'<li>'+esc(name)+
+  const li=s.r.map(({name,kind,v})=>'<li>'+esc(name)+
     (kind==='peak'?', peak <b>#'+esc(v)+'</b>':kind==='rank'?' <b>#'+esc(v)+'</b>':'')+'</li>').join('');
   const how=s.m==='Demonym'?'The place is named by its demonym, e.g. “American”.'
            :s.m==='Nickname'?'The place is named by a nickname, e.g. “Motor City”.':'';
@@ -682,8 +815,8 @@ function reasonsOf(r){
   const out=[];
   REASONS.forEach(([col,name,kind])=>{
     const v=r[col]; if(!v) return;
-    if(kind==='flag'){ if(v.toLowerCase()==='y') out.push([name,kind,'']); }
-    else out.push([name,kind,v]);
+    if(kind==='flag'){ if(v.toLowerCase()==='y') out.push({col,name,kind,v:''}); }
+    else out.push({col,name,kind,v});
   });
   return out;
 }
