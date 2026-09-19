@@ -108,7 +108,11 @@
     background:var(--dial);border:2px solid var(--panel);cursor:grab
   }
   .dual input[type=range]::-moz-range-track{background:none}
-  .tally{padding:13px 22px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--mute)}
+  .tally{
+    display:block;width:100%;padding:13px 22px;border:0;border-top:1px solid var(--rule);
+    background:transparent;color:var(--mute);font:12.5px "Spline Sans",sans-serif;text-align:left;
+    cursor:default
+  }
   .tally b{color:var(--ink);font-weight:600}
   /* ---------- results ---------- */
   #results{border-top:1px solid var(--rule);overflow-y:auto;max-height:46%;padding:0 0 8px}
@@ -239,7 +243,12 @@
     aside.open{left:0}
     #scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1100;border:0}
     .controls{overflow:visible;flex:none}
-    .tally{display:none}
+    .tally{
+      padding:13px 18px;cursor:pointer;color:var(--dial);
+      background:rgba(233,162,59,.08);border-top:1px solid rgba(233,162,59,.35);
+      font:500 13px "Barlow Condensed",sans-serif;letter-spacing:.08em;text-transform:uppercase
+    }
+    .tally b{color:var(--dial)}
     /* song list becomes a bottom sheet you can drag up and down */
     #results{
       position:fixed;left:0;right:0;bottom:0;z-index:1150;
@@ -381,7 +390,7 @@
       </div>
     </div>
 
-    <div class="tally"><b id="ns">—</b> songs · <b id="np">—</b> places shown</div>
+    <button type="button" class="tally" id="tally"><span id="tallytext"><b id="ns">—</b> songs · <b id="np">—</b> places shown</span></button>
 
     <div id="results">
       <div class="rhead">
@@ -437,10 +446,14 @@ const state={cats:new Set(CATS),ments:new Set(MENTS),reasons:new Set(REASON_COLS
              fields:new Set(FIELDS.map(f=>f[0])),from:1890,to:2030,q:'',sel:null,
              svc:recall('svc')||'youtube'};
 const touch=matchMedia('(hover:none)').matches;
-let PLACES=[],layer,markers=new Map();
+let PLACES=[],layer,markers=new Map(),counts=[0,0];
+const mob=()=>matchMedia('(max-width:680px)').matches;
+const tally=document.getElementById('tally'), tallytext=document.getElementById('tallytext');
 const SONGS=[];   // songs currently listed, indexed by the ? buttons
 
-const map=L.map('map',{worldCopyJump:true,minZoom:2,maxZoom:16,zoomControl:true}).setView([31,-30],3);
+const mobStart=matchMedia('(max-width:680px)').matches;
+const map=L.map('map',{worldCopyJump:true,minZoom:2,maxZoom:16,zoomControl:true})
+  .setView(mobStart?[25,-35]:[31,-30],mobStart?2:3);
 // Esri Dark Gray Canvas — no API key needed.
 // CARTO began watermarking keyless tiles in Aug 2026 and is retiring its raster
 // service, so this avoids both problems. To use CARTO instead, get a free key at
@@ -576,15 +589,14 @@ function draw(){
       (p.f.length===1?' song':' songs')+'</div><div class="tl">'+top+'</div>'+
       (p.f.length>4?'<div class="tm">+'+(p.f.length-4)+' more — click to see all</div>':''),
       {className:'tip',direction:'top',offset:[0,-d/2-2]});
-    m.on('click',()=>select(p));
+    m.on('click',()=>{ select(p); setTimeout(()=>centreOn(p.lat,p.lon,map.getZoom()),240); });
     markers.set(p.p,m);
     layer.addLayer(m);
   });
   map.addLayer(layer);
   // a song naming two places sits under both; count it once
   const nSongs=new Set(vis.flatMap(p=>p.f.map(s=>s.t+'\u0000'+s.a))).size;
-  document.getElementById('np').textContent=vis.length;
-  document.getElementById('ns').textContent=nSongs;
+  tallyText(nSongs,vis.length);
   document.getElementById('mcount').textContent=nSongs+' songs';
   if(state.q.trim()&&!state.sel){ showMatches(vis,nSongs); fitTo(vis); }
   if(state.sel){ const still=vis.find(p=>p.p===state.sel.p); still?select(still,true):clearSel(); }
@@ -599,6 +611,14 @@ function draw(){
        :state.ments.size===0?'No mention types selected — tap <b>All</b> under “How it’s named”.'
        :'Nothing matches the current filters.')+'</p>';
   }
+}
+
+// on a phone the sheet covers the lower part of the map, so shift the target up
+function centreOn(lat,lon,zoom){
+  const sheetPx=mob()&&results.classList.contains('up') ? results.getBoundingClientRect().height : 0;
+  // shifting the centre down the screen lifts the marker above the sheet
+  const pt=map.project([lat,lon],zoom).add([0,sheetPx/2]);
+  map.setView(map.unproject(pt,zoom),zoom,{animate:true});
 }
 
 // move the map to the places a search matched, without zooming in absurdly far
@@ -668,10 +688,11 @@ function clearSel(){
 }
 
 // --- mobile drawer + bottom sheet ---
-const mob=()=>matchMedia('(max-width:680px)').matches;
 const side=document.getElementById('side'), scrim=document.getElementById('scrim'),
       mfilter=document.getElementById('mfilter'), results=document.getElementById('results');
 function drawer(open){
+  // the drawer sits over the sheet, clipping its buttons: lower the sheet while it is open
+  if(open&&mob()) results.classList.remove('up');
   side.classList.toggle('open',open);
   scrim.hidden=!open;
   mfilter.setAttribute('aria-expanded',open);
@@ -774,6 +795,18 @@ qclr.onclick=()=>{
   if(!state.sel) clearSel();
   draw(); qbox.focus();
 };
+// on a phone the count doubles as "show me these" — the drawer hides the list
+function tallyText(nSongs,nPlaces){
+  if(nSongs!==undefined) counts=[nSongs,nPlaces];
+  const [n,pl]=counts;
+  tallytext.innerHTML = mob()
+    ? (n ? 'Show '+n.toLocaleString('en-US')+(n===1?' song':' songs')+' \u2192'
+         : 'Nothing matches these filters')
+    : '<b id="ns">'+n.toLocaleString('en-US')+'</b> songs \u00B7 <b id="np">'+pl.toLocaleString('en-US')+'</b> places shown';
+}
+tally.onclick=()=>{ if(mob()) drawer(false); };
+addEventListener('resize',()=>tallyText());
+
 map.on('click',clearSel);
 
 // tapping a row anywhere but the title or the ? jumps to that place on the map
@@ -783,9 +816,10 @@ document.getElementById('rlist').addEventListener('click',e=>{
   if(!row||!row.dataset.place) return;
   const p=VIS.find(x=>x.p===row.dataset.place);
   if(!p) return;
-  map.setView([p.lat,p.lon],Math.max(map.getZoom(),9),{animate:true});
-  if(state.sel&&state.sel.p===p.p) return;   // already listed: just move the map
+  const z=Math.max(map.getZoom(),9);
+  if(state.sel&&state.sel.p===p.p){ centreOn(p.lat,p.lon,z); return; }
   select(p);
+  setTimeout(()=>centreOn(p.lat,p.lon,z),240);   // after the sheet has settled
 });
 
 // Enter dismisses the on-screen keyboard rather than doing nothing
