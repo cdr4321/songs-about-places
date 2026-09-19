@@ -185,6 +185,7 @@
   .leaflet-bar a{background:var(--panel);color:var(--ink);border-color:var(--rule)}
   .leaflet-bar a:hover{background:var(--night-2);color:var(--dial)}
   :focus-visible{outline:2px solid var(--dial);outline-offset:2px}
+  .nowrap{white-space:nowrap}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
   /* keep the side-by-side layout down to a much narrower width by shrinking
@@ -444,7 +445,7 @@ const remember=(k,v)=>{try{sessionStorage.setItem(k,v);}catch(e){}};
 const recall=k=>{try{return sessionStorage.getItem(k);}catch(e){return null;}};
 const state={cats:new Set(CATS),ments:new Set(MENTS),reasons:new Set(REASON_COLS),
              fields:new Set(FIELDS.map(f=>f[0])),from:1890,to:2030,q:'',sel:null,
-             svc:recall('svc')||'youtube'};
+             svc:recall('svc')||'youtube',song:null};
 const touch=matchMedia('(hover:none)').matches;
 let PLACES=[],layer,markers=new Map(),counts=[0,0];
 const mob=()=>matchMedia('(max-width:680px)').matches;
@@ -452,8 +453,10 @@ const tally=document.getElementById('tally'), tallytext=document.getElementById(
 const SONGS=[];   // songs currently listed, indexed by the ? buttons
 
 const mobStart=matchMedia('(max-width:680px)').matches;
-const map=L.map('map',{worldCopyJump:true,minZoom:2,maxZoom:16,zoomControl:true})
-  .setView(mobStart?[25,-35]:[31,-30],mobStart?2:3);
+const map=L.map('map',{worldCopyJump:true,minZoom:1,maxZoom:16,zoomControl:true,zoomSnap:.25});
+// a narrow iframe needs a wider view than a fixed zoom level gives it
+if(mobStart) map.fitBounds([[-52,-165],[68,175]],{padding:[8,8],animate:false});
+else map.setView([31,-30],3);
 // Esri Dark Gray Canvas — no API key needed.
 // CARTO began watermarking keyless tiles in Aug 2026 and is retiring its raster
 // service, so this avoids both problems. To use CARTO instead, get a free key at
@@ -537,10 +540,12 @@ SERVICES.forEach(([v,label])=>{
 });
 const svcName=()=>(SERVICES.find(x=>x[0]===state.svc)||SERVICES[0])[1];
 
+const songKey=s=>s.t+'\u0000'+s.a+'\u0000'+s.y;
 function songsOf(p,q,placeHit){
   return p.s.filter(s=>{
     if(!state.ments.has(s.m)||s.y<state.from||s.y>state.to) return false;
     if(!s.r.some(r=>state.reasons.has(r.col))) return false;
+    if(state.song&&songKey(s)!==state.song) return false;
     if(!q||placeHit) return true;
     return (state.fields.has('title')&&s.t.toLowerCase().includes(q))
         || (state.fields.has('artist')&&s.a.toLowerCase().includes(q));
@@ -636,12 +641,12 @@ function showMatches(vis,nSongs){
   SONGS.length=0; hideWhy();
   const rows=[];
   vis.forEach(p=>p.f.forEach(s=>rows.push({s,p})));
-  rows.sort((a,b)=>a.s.y-b.s.y||a.s.t.localeCompare(b.s.t));
+  rows.sort((a,b)=>b.s.y-a.s.y||a.s.t.localeCompare(b.s.t));   // newest first
   const cap=rows.slice(0,80);
   document.getElementById('rt').textContent='Matching "'+state.q.trim()+'"';
   document.getElementById('rs').textContent=
     nSongs+(nSongs===1?' song':' songs')+' in '+vis.length+(vis.length===1?' place':' places')+
-    (rows.length>80?' — first 80 shown':'');
+    (rows.length>80?' — newest 80 shown':'');
   document.getElementById('rlist').innerHTML = cap.length
     ? cap.map(({s,p})=>songRow(s,p.p,p.p)).join('')
     : '<p class="empty">Nothing matches that. Try a place, a region like Africa or Europe, a song title, or an artist.</p>';
@@ -649,12 +654,20 @@ function showMatches(vis,nSongs){
   else if(mob()) sheetCount();
   headBtns();
 }
+// keep the last word and the play marker together so the marker can't wrap alone
+function titleWithPlay(t){
+  const i=t.lastIndexOf(' ');
+  const head=i<0?'':esc(t.slice(0,i+1));
+  return head+'<span class="nowrap">'+esc(i<0?t:t.slice(i+1))+
+         '<span class="play" aria-hidden="true"></span></span>';
+}
+
 function songRow(s,placeName,place){
   const i=SONGS.push(s)-1;
   return '<div class="song" data-place="'+esc(place||placeName||'')+'">'+
     '<div class="yr">'+s.y+'</div><div>'+
     '<div class="trow"><a class="ttl" href="'+playUrl(s)+'" target="_blank" rel="noopener" '+
-      'title="Find this song on '+esc(svcName())+'">'+esc(s.t)+'<span class="play" aria-hidden="true"></span>'+
+      'title="Find this song on '+esc(svcName())+'">'+titleWithPlay(s.t)+
       '<span class="sr"> (opens a '+esc(svcName())+' search)</span></a>'+
     '<button type="button" class="why" data-i="'+i+'" aria-expanded="false" aria-controls="whybox" '+
       'aria-label="Why '+esc(s.t)+' is on the map">?</button></div>'+
@@ -682,7 +695,7 @@ function idle(){
   document.getElementById('rlist').innerHTML='<p class="empty">Every marker is a place named in a song title. Bigger markers carry more songs.</p>';
 }
 function clearSel(){
-  state.sel=null;
+  state.sel=null; state.song=null;
   if(mob()){ results.classList.remove('up'); reopen.classList.remove('show'); }
   idle();
 }
@@ -697,13 +710,20 @@ function drawer(open){
   scrim.hidden=!open;
   mfilter.setAttribute('aria-expanded',open);
   // results found while the filters were covering the map: show them on the way out
-  if(!open&&mob()&&hasRows()){ sheetCount(); sheet(true, rowCount()<=3 ? SMALL : HALF); }
+  if(!open&&mob()&&hasRows()){
+    sheetCount(); sheet(true, rowCount()<=3 ? SMALL : HALF);
+    // the sheet now covers part of the map: put the markers back in view
+    setTimeout(()=>{
+      if(state.sel) centreOn(state.sel.lat,state.sel.lon,map.getZoom());
+      else if(state.q.trim()){ fitKey=''; fitTo(VIS); }
+    },260);
+  }
 }
 mfilter.onclick=()=>drawer(!side.classList.contains('open'));
 scrim.onclick=()=>drawer(false);
 // --- the bottom sheet: open at a sensible height, drag to resize, minimise and restore ---
 const reopen=document.getElementById('reopen'), rhead=document.querySelector('.rhead');
-const FULL=88, HALF=62, SMALL=34;           // heights as a percentage of the viewport
+const FULL=88, HALF=52, SMALL=30;           // heights as a percentage of the viewport
 function sheet(open,pct){
   if(!mob()) return;
   if(pct) results.style.setProperty('--sh',pct+'dvh');
@@ -728,7 +748,7 @@ function headBtns(){
     rclose.hidden=!listed; rclose.textContent='\u00D7';
     rclose.title=rclose.ariaLabel='Close song list';
   }
-  rback.hidden=!(state.sel&&state.q.trim());
+  rback.hidden=!((state.sel&&state.q.trim())||state.song);
 }
 addEventListener('resize',headBtns);
 rclose.onclick=()=>{
@@ -736,7 +756,7 @@ rclose.onclick=()=>{
   qbox.value=''; state.q=''; qclr.hidden=true;   // close = back to the idle panel
   clearSel(); draw();
 };
-rback.onclick=()=>{ state.sel=null; draw(); document.getElementById('results').scrollTop=0; };
+rback.onclick=()=>{ state.sel=null; state.song=null; draw(); document.getElementById('results').scrollTop=0; };
 reopen.onclick=()=>sheet(true);
 addEventListener('keydown',e=>{if(e.key==='Escape'){drawer(false);sheet(false);}});
 
@@ -785,7 +805,7 @@ f.oninput=years; t.oninput=years;
 years();
 const qbox=document.getElementById('q'), qclr=document.getElementById('qclr');
 qbox.oninput=e=>{
-  state.q=e.target.value;
+  state.q=e.target.value; state.song=null;
   qclr.hidden=!state.q;
   if(!state.q.trim()&&!state.sel) clearSel();
   draw();
@@ -816,9 +836,14 @@ document.getElementById('rlist').addEventListener('click',e=>{
   if(!row||!row.dataset.place) return;
   const p=VIS.find(x=>x.p===row.dataset.place);
   if(!p) return;
+  const btn=row.querySelector('.why');
+  const song=btn?SONGS[+btn.dataset.i]:null;
   const z=Math.max(map.getZoom(),9);
-  if(state.sel&&state.sel.p===p.p){ centreOn(p.lat,p.lon,z); return; }
-  select(p);
+  state.song=song?songKey(song):null;   // this song alone, on the map and in the list
+  state.sel=p;
+  draw();                               // recompute with the single-song filter
+  results.scrollTop=0;
+  if(mob()){ sheetCount(); sheet(true,SMALL); }
   setTimeout(()=>centreOn(p.lat,p.lon,z),240);   // after the sheet has settled
 });
 
@@ -919,7 +944,7 @@ function build(rows,aliasRows){
     p.s.push({y:+r.year,t:r.title,a:r.artist,m:r.mention_type||'Direct',r:reasonsOf(r)});
   });
   const out=[...by.values()].filter(p=>isFinite(p.lat)&&isFinite(p.lon));
-  out.forEach(p=>p.s.sort((a,b)=>a.y-b.y||a.t.localeCompare(b.t)));
+  out.forEach(p=>p.s.sort((a,b)=>b.y-a.y||a.t.localeCompare(b.t)));   // newest first
   return out.sort((a,b)=>b.s.length-a.s.length);
 }
 const getText=u=>fetch(u,{cache:'no-cache'}).then(r=>{if(!r.ok) throw new Error(u+' '+r.status); return r.text();});
