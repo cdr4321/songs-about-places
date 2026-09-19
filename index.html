@@ -62,13 +62,8 @@
   .gtoggle[aria-expanded="true"] .chev{transform:rotate(180deg)}
   .gbody{margin-top:9px}
   .gbody[hidden]{display:none}
-  .scope{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
-  .scope .chip{padding:4px 8px;font-size:10.5px}
-  .svc{display:flex;align-items:center;gap:8px;margin-top:10px}
-  .svc select{
-    flex:1;padding:6px 8px;background:var(--night-2);border:1px solid var(--rule);border-radius:2px;
-    color:var(--ink);font:13px "Spline Sans",sans-serif
-  }
+  .scope{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+  .scope .chip{padding:5px 9px;font-size:10.5px}
   /* the ? as it appears beside a song title */
   .qmark{
     display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;
@@ -206,7 +201,17 @@
   }
   /* ---------- mobile: map first, filters in a drawer, songs in a sheet ---------- */
   #mtop{display:none}
-  #rclose{display:none}
+  #rclose,#rback{
+    display:flex;align-items:center;justify-content:center;
+    position:absolute;top:12px;width:28px;height:28px;padding:0;
+    background:transparent;border:1px solid var(--rule);border-radius:50%;
+    color:var(--mute);font-size:15px;line-height:1
+  }
+  #rclose{right:20px}
+  #rback{right:54px}
+  #rclose:hover,#rback:hover{border-color:var(--dial);color:var(--dial)}
+  #rclose[hidden],#rback[hidden]{display:none}
+  .rhead{position:sticky;padding-right:92px}
   #reopen{display:none}
   @media (max-width:680px){
     .wrap{display:block;height:100dvh;position:relative}
@@ -260,12 +265,11 @@
       background:var(--panel);border:1px solid rgba(233,162,59,.45);border-radius:50%;
       color:var(--dial);font-size:19px;line-height:1
     }
-    #rclose{
-      display:flex;align-items:center;justify-content:center;
-      position:absolute;top:12px;right:12px;width:34px;height:34px;
-      background:transparent;border:1px solid rgba(233,162,59,.45);border-radius:50%;
-      color:var(--dial);font-size:15px;line-height:1
+    #rclose,#rback{
+      top:12px;width:34px;height:34px;border-color:rgba(233,162,59,.45);color:var(--dial);font-size:17px
     }
+    #rclose{right:12px}
+    #rback{right:54px}
     /* brings the list back after it has been minimised */
     #reopen{
       position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:1140;
@@ -306,13 +310,16 @@
           <input type="search" id="q" placeholder="Memphis, Africa, Sinatra, Harlem…" autocomplete="off" />
           <button type="button" id="qclr" aria-label="Clear search" hidden>&#215;</button>
         </div>
-        <div class="scope" id="fields" role="group" aria-label="Search in">
-          <span class="lbl" style="align-self:center;margin:0 2px 0 0">Search in</span>
-        </div>
-        <div class="svc">
-          <label class="lbl" for="svc" style="margin:0">Play on</label>
-          <select id="svc" aria-label="Streaming service for song links"></select>
-        </div>
+      </div>
+
+      <div class="grp">
+        <span class="lbl">Search in</span>
+        <div class="scope" id="fields" role="group" aria-label="Search in"></div>
+      </div>
+
+      <div class="grp">
+        <span class="lbl">Play links open on</span>
+        <div class="scope" id="svcs" role="radiogroup" aria-label="Streaming service for song links"></div>
       </div>
 
       <div class="grp">
@@ -378,7 +385,8 @@
 
     <div id="results">
       <div class="rhead">
-        <button id="rclose" type="button" aria-label="Minimise song list" title="Minimise">&#9660;</button>
+        <button id="rback" type="button" aria-label="Back to all results" title="Back to all results" hidden>&#8592;</button>
+        <button id="rclose" type="button" aria-label="Close song list" title="Close">&#9660;</button>
         <h2 id="rt">Nothing selected</h2><p id="rs">Pick a marker to list its songs.</p>
       </div>
       <div id="rlist"><p class="empty">Every marker is a place named in a song title. Bigger markers carry more songs.<br><br>Something incorrect or missing? <a href="https://www.chrisdallariva.com/contact" target="_blank" rel="noopener" style="color:var(--dial)">Let me know</a>.</p></div>
@@ -418,7 +426,7 @@ const SERVICES=[
   ['spotify','Spotify',    q=>'https://open.spotify.com/search/'+encodeURIComponent(q)],
   ['apple','Apple Music',  q=>'https://music.apple.com/search?term='+encodeURIComponent(q)],
   ['tidal','Tidal',        q=>'https://tidal.com/search?q='+encodeURIComponent(q)],
-  ['audiomack','Audiomack',q=>'https://audiomack.com/search/'+encodeURIComponent(q)],
+  ['audiomack','Audiomack',q=>'https://audiomack.com/search?q='+encodeURIComponent(q)],
 ];
 const FIELDS=[['place','Location'],['title','Song title'],['artist','Artist']];
 const REASON_COLS=REASONS.map(r=>r[0]);
@@ -497,12 +505,23 @@ document.querySelectorAll('.gtoggle').forEach(t=>{
 });
 
 // which streaming service the play links point at, remembered for the session
-const svcSel=document.getElementById('svc');
+const svcs=document.getElementById('svcs');
 SERVICES.forEach(([v,label])=>{
-  const o=document.createElement('option'); o.value=v; o.textContent=label; svcSel.appendChild(o);
+  const b=document.createElement('button');
+  b.className='chip'; b.type='button'; b.textContent=label; b.dataset.v=v;
+  b.setAttribute('role','radio');
+  b.onclick=()=>{
+    state.svc=v; remember('svc',v);
+    svcs.querySelectorAll('.chip').forEach(c=>{
+      const on=c.dataset.v===v;
+      c.setAttribute('aria-pressed',on); c.setAttribute('aria-checked',on);
+    });
+    draw();
+  };
+  const on=v===state.svc;
+  b.setAttribute('aria-pressed',on); b.setAttribute('aria-checked',on);
+  svcs.appendChild(b);
 });
-svcSel.value=state.svc;
-svcSel.onchange=()=>{ state.svc=svcSel.value; remember('svc',state.svc); draw(); };
 const svcName=()=>(SERVICES.find(x=>x[0]===state.svc)||SERVICES[0])[1];
 
 function songsOf(p,q,placeHit){
@@ -606,7 +625,9 @@ function showMatches(vis,nSongs){
   document.getElementById('rlist').innerHTML = cap.length
     ? cap.map(({s,p})=>songRow(s,p.p,p.p)).join('')
     : '<p class="empty">Nothing matches that. Try a place, a region like Africa or Europe, a song title, or an artist.</p>';
-  if(mob()){ sheetCount(); sheet(true, cap.length<=3 ? SMALL : HALF); }
+  if(mob()&&!side.classList.contains('open')){ sheetCount(); sheet(true, cap.length<=3 ? SMALL : HALF); }
+  else if(mob()) sheetCount();
+  headBtns();
 }
 function songRow(s,placeName,place){
   const i=SONGS.push(s)-1;
@@ -622,6 +643,8 @@ function songRow(s,placeName,place){
     '</div></div>';
 }
 function select(p,keep){
+  // keep=true means this is a redraw (a keystroke, a filter change), not the
+  // user picking a place: leave the drawer and the sheet exactly as they are
   state.sel=p; SONGS.length=0; hideWhy();
   document.getElementById('rt').textContent=label(p.p);
   document.getElementById('rs').textContent=p.c+' · '+p.f.length+(p.f.length===1?' song':' songs');
@@ -629,9 +652,11 @@ function select(p,keep){
   document.querySelectorAll('.dot.on').forEach(e=>e.classList.remove('on'));
   const m=markers.get(p.p); if(m&&m._icon) m._icon.querySelector('.dot')?.classList.add('on');
   if(!keep) document.getElementById('results').scrollTop=0;
-  if(mob()){ drawer(false); sheetCount(); sheet(true, p.f.length<=3 ? SMALL : HALF); }
+  if(mob()&&!keep){ drawer(false); sheetCount(); sheet(true, p.f.length<=3 ? SMALL : HALF); }
+  headBtns();
 }
 function idle(){
+  if(typeof headBtns==='function') headBtns();
   document.getElementById('rt').textContent='Nothing selected';
   document.getElementById('rs').textContent='Pick a marker to list its songs.';
   document.getElementById('rlist').innerHTML='<p class="empty">Every marker is a place named in a song title. Bigger markers carry more songs.</p>';
@@ -650,6 +675,8 @@ function drawer(open){
   side.classList.toggle('open',open);
   scrim.hidden=!open;
   mfilter.setAttribute('aria-expanded',open);
+  // results found while the filters were covering the map: show them on the way out
+  if(!open&&mob()&&hasRows()){ sheetCount(); sheet(true, rowCount()<=3 ? SMALL : HALF); }
 }
 mfilter.onclick=()=>drawer(!side.classList.contains('open'));
 scrim.onclick=()=>drawer(false);
@@ -664,11 +691,31 @@ function sheet(open,pct){
   if(open) hideWhy();
 }
 const hasRows=()=>!!document.querySelector('#rlist .song');
+const rowCount=()=>document.querySelectorAll('#rlist .song').length;
 function sheetCount(){
   const n=document.querySelectorAll('#rlist .song').length;
   reopen.textContent=(n?'Show '+n+(n===1?' song':' songs'):'Show songs')+' \u25B2';
 }
-document.getElementById('rclose').onclick=()=>{ sheet(false); sheetCount(); };
+const rclose=document.getElementById('rclose'), rback=document.getElementById('rback');
+// on a phone the list is a sheet you minimise; on a wide screen it is a panel you close
+function headBtns(){
+  const listed=!!state.sel||!!state.q.trim();
+  if(mob()){
+    rclose.hidden=false; rclose.textContent='\u25BC';
+    rclose.title=rclose.ariaLabel='Minimise song list';
+  }else{
+    rclose.hidden=!listed; rclose.textContent='\u00D7';
+    rclose.title=rclose.ariaLabel='Close song list';
+  }
+  rback.hidden=!(state.sel&&state.q.trim());
+}
+addEventListener('resize',headBtns);
+rclose.onclick=()=>{
+  if(mob()){ sheet(false); sheetCount(); return; }
+  qbox.value=''; state.q=''; qclr.hidden=true;   // close = back to the idle panel
+  clearSel(); draw();
+};
+rback.onclick=()=>{ state.sel=null; draw(); document.getElementById('results').scrollTop=0; };
 reopen.onclick=()=>sheet(true);
 addEventListener('keydown',e=>{if(e.key==='Escape'){drawer(false);sheet(false);}});
 
