@@ -48,8 +48,11 @@
     color:var(--mute);cursor:pointer;transition:.15s
   }
   .chip[aria-pressed="true"]{background:var(--dial);border-color:var(--dial);color:#14130F}
-  .chip:hover{border-color:var(--dial-dim);color:var(--ink)}
-  .chip[aria-pressed="true"]:hover{color:#14130F}
+  /* a touch device keeps :hover on whatever was tapped last, so only real pointers get it */
+  @media (hover:hover){
+    .chip:hover{border-color:var(--dial-dim);color:var(--ink)}
+    .chip[aria-pressed="true"]:hover{color:#14130F}
+  }
   .qwrap{position:relative}
   /* collapsible filter groups */
   .gtoggle{
@@ -71,7 +74,7 @@
     font:600 10px/1 "Spline Sans",sans-serif;vertical-align:-2px
   }
   .song{cursor:pointer}
-  .song:hover{background:rgba(233,162,59,.05)}
+  @media (hover:hover){ .song:hover{background:rgba(233,162,59,.05)} }
   .song.static,.song.static:hover{cursor:default;background:none}
   #sclose{display:none}
   input[type=search]{
@@ -262,7 +265,7 @@
     #results.up{transform:translateY(0)}
     #results.dragging{transition:none}
     .rhead{
-      padding:16px 52px 9px 18px;border-radius:12px 12px 0 0;
+      padding:16px 102px 9px 18px;border-radius:12px 12px 0 0;
       position:sticky;top:0;z-index:2;background:var(--panel);
       touch-action:none;cursor:grab;user-select:none
     }
@@ -448,7 +451,7 @@ const remember=(k,v)=>{try{sessionStorage.setItem(k,v);}catch(e){}};
 const recall=k=>{try{return sessionStorage.getItem(k);}catch(e){return null;}};
 const state={cats:new Set(CATS),ments:new Set(MENTS),reasons:new Set(REASON_COLS),
              fields:new Set(FIELDS.map(f=>f[0])),from:1890,to:2030,q:'',sel:null,
-             svc:recall('svc')||'youtube',song:null};
+             svc:recall('svc')||'youtube',song:null,songFrom:null};
 const touch=matchMedia('(hover:none)').matches;
 let PLACES=[],layer,markers=new Map(),counts=[0,0];
 const mob=()=>matchMedia('(max-width:680px)').matches;
@@ -460,6 +463,15 @@ const map=L.map('map',{worldCopyJump:true,minZoom:1,maxZoom:16,zoomControl:true,
 // a narrow iframe needs a wider view than a fixed zoom level gives it
 if(mobStart) map.fitBounds([[-52,-165],[68,175]],{padding:[8,8],animate:false});
 else map.setView([31,-30],3);
+
+// A trackpad pinch arrives as ctrl+wheel, which Leaflet treats as an ordinary
+// scroll and barely zooms. Handle it ourselves, zooming about the cursor.
+map.getContainer().addEventListener('wheel',e=>{
+  if(!e.ctrlKey) return;                 // plain scrolling keeps Leaflet's behaviour
+  e.preventDefault(); e.stopPropagation();
+  const step=Math.max(-2,Math.min(2,-e.deltaY*0.03));
+  map.setZoomAround(map.mouseEventToContainerPoint(e),map.getZoom()+step,{animate:false});
+},{passive:false,capture:true});
 // Esri Dark Gray Canvas — no API key needed.
 // CARTO began watermarking keyless tiles in Aug 2026 and is retiring its raster
 // service, so this avoids both problems. To use CARTO instead, get a free key at
@@ -476,16 +488,21 @@ L.tileLayer(ESRI+'World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{
 L.tileLayer(ESRI+'World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
   {maxZoom:16,detectRetina:true,opacity:.75}).addTo(map);
 
+// the redraw rebuilds every marker; let the button repaint first so it feels instant
+function defer(fn){ requestAnimationFrame(()=>setTimeout(fn,0)); }
+function tapped(e){ if(e.detail>0) e.currentTarget.blur(); }   // keep the focus ring for keyboards only
+
 function chips(el,list,set,g){
   el.querySelectorAll('.chip').forEach(c=>c.remove());
   list.forEach(([v,label])=>{
     const b=document.createElement('button');
     b.className='chip'; b.type='button'; b.textContent=label; b.dataset.v=v;
     b.setAttribute('aria-pressed',set.has(v));
-    b.onclick=()=>{
+    b.onclick=e=>{
+      tapped(e);
       set.has(v)?set.delete(v):set.add(v);
       b.setAttribute('aria-pressed',set.has(v));
-      summary(g); draw();
+      summary(g); defer(draw);
     };
     el.appendChild(b);
   });
@@ -500,11 +517,12 @@ Object.entries(GROUPS).forEach(([g,{set,values}])=>{
   chips(document.getElementById(g),values,set,g); summary(g);
 });
 document.querySelectorAll('.setall button').forEach(b=>{
-  b.onclick=()=>{
+  b.onclick=e=>{
+    tapped(e);
     const g=b.dataset.g, {set,values}=GROUPS[g];
     set.clear(); if(b.dataset.v==='1') values.forEach(([v])=>set.add(v));
     document.querySelectorAll('#'+g+' .chip').forEach(c=>c.setAttribute('aria-pressed',set.has(c.dataset.v)));
-    summary(g); draw();
+    summary(g); defer(draw);
   };
 });
 
@@ -516,7 +534,8 @@ function summary(g){
   el.textContent=set.size===values.length?'All':set.size===0?'None':set.size+' of '+values.length;
 }
 document.querySelectorAll('.gtoggle').forEach(t=>{
-  t.onclick=()=>{
+  t.onclick=e=>{
+    tapped(e);
     const open=t.getAttribute('aria-expanded')==='true';
     t.setAttribute('aria-expanded',!open);
     document.getElementById(t.getAttribute('aria-controls')).hidden=open;
@@ -529,13 +548,14 @@ SERVICES.forEach(([v,label])=>{
   const b=document.createElement('button');
   b.className='chip'; b.type='button'; b.textContent=label; b.dataset.v=v;
   b.setAttribute('role','radio');
-  b.onclick=()=>{
+  b.onclick=e=>{
+    tapped(e);
     state.svc=v; remember('svc',v);
     svcs.querySelectorAll('.chip').forEach(c=>{
       const on=c.dataset.v===v;
       c.setAttribute('aria-pressed',on); c.setAttribute('aria-checked',on);
     });
-    draw();
+    defer(draw);
   };
   const on=v===state.svc;
   b.setAttribute('aria-pressed',on); b.setAttribute('aria-checked',on);
@@ -703,7 +723,7 @@ function idle(){
   document.getElementById('rlist').innerHTML='<p class="empty">Every marker is a place named in a song title. Bigger markers carry more songs.</p>';
 }
 function clearSel(){
-  state.sel=null; state.song=null;
+  state.sel=null; state.song=null; state.songFrom=null;
   if(mob()){ results.classList.remove('up'); reopen.classList.remove('show'); }
   idle();
 }
@@ -765,8 +785,12 @@ rclose.onclick=()=>{
   clearSel(); draw();
 };
 rback.onclick=()=>{
-  // one step back: a single song returns to its place, a place returns to the results
-  if(state.song) state.song=null;
+  // back goes to the screen you came from: the place list, or the search results
+  if(state.song){
+    state.song=null;
+    if(state.songFrom==='search') state.sel=null;
+    state.songFrom=null;
+  }
   else state.sel=null;
   draw();
   document.getElementById('results').scrollTop=0;
@@ -819,7 +843,7 @@ f.oninput=years; t.oninput=years;
 years();
 const qbox=document.getElementById('q'), qclr=document.getElementById('qclr');
 qbox.oninput=e=>{
-  state.q=e.target.value; state.song=null;
+  state.q=e.target.value; state.song=null; state.songFrom=null;
   qclr.hidden=!state.q;
   if(!state.q.trim()&&!state.sel) clearSel();
   draw();
@@ -853,6 +877,8 @@ document.getElementById('rlist').addEventListener('click',e=>{
   const btn=row.querySelector('.why');
   const song=btn?SONGS[+btn.dataset.i]:null;
   const z=Math.max(map.getZoom(),9);
+  // remember which screen this was opened from, so back returns to that one
+  state.songFrom=state.sel?'place':'search';
   state.song=song?songKey(song):null;   // this song alone, on the map and in the list
   state.sel=p;
   draw();                               // recompute with the single-song filter
