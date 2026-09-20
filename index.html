@@ -451,7 +451,7 @@ const remember=(k,v)=>{try{sessionStorage.setItem(k,v);}catch(e){}};
 const recall=k=>{try{return sessionStorage.getItem(k);}catch(e){return null;}};
 const state={cats:new Set(CATS),ments:new Set(MENTS),reasons:new Set(REASON_COLS),
              fields:new Set(FIELDS.map(f=>f[0])),from:1890,to:2030,q:'',sel:null,
-             svc:recall('svc')||'youtube',song:null,songFrom:null};
+             svc:recall('svc')||'youtube',song:null,songFrom:null,minimised:false};
 const touch=matchMedia('(hover:none)').matches;
 let PLACES=[],layer,markers=new Map(),counts=[0,0];
 const mob=()=>matchMedia('(max-width:680px)').matches;
@@ -594,6 +594,13 @@ const short=chain=>chain.split(', ')[0];
 function radius(n){return Math.min(26,7+Math.sqrt(n)*3.1);}
 
 let VIS=[];
+function showSheet(){
+  // the only reason not to show results on a phone is that the reader minimised
+  // them or the filter drawer is covering the map
+  if(!mob()||state.minimised||side.classList.contains('open')||!hasRows()) return;
+  sheetCount();
+  if(!results.classList.contains('up')) sheet(true, rowCount()<=3 ? SMALL : HALF);
+}
 function draw(){
   const vis=visible(); VIS=vis;
   if(layer) map.removeLayer(layer);
@@ -617,7 +624,7 @@ function draw(){
       (p.f.length===1?' song':' songs')+'</div><div class="tl">'+top+'</div>'+
       (p.f.length>4?'<div class="tm">+'+(p.f.length-4)+' more — click to see all</div>':''),
       {className:'tip',direction:'top',offset:[0,-d/2-2]});
-    m.on('click',()=>{ select(p); setTimeout(()=>centreOn(p.lat,p.lon,map.getZoom()),240); });
+    m.on('click',()=>{ state.minimised=false; select(p); setTimeout(()=>centreOn(p.lat,p.lon,map.getZoom()),240); });
     markers.set(p.p,m);
     layer.addLayer(m);
   });
@@ -625,6 +632,7 @@ function draw(){
   // a song naming two places sits under both; count it once
   const nSongs=new Set(vis.flatMap(p=>p.f.map(s=>s.t+'\u0000'+s.a))).size;
   tallyText(nSongs,vis.length);
+  showSheet();
   document.getElementById('mcount').textContent=nSongs+' songs';
   // a selected place that no longer matches drops away first, so the results
   // show in the same pass rather than waiting for the next keystroke
@@ -780,7 +788,7 @@ function headBtns(){
 }
 addEventListener('resize',headBtns);
 rclose.onclick=()=>{
-  if(mob()){ sheet(false); sheetCount(); return; }
+  if(mob()){ state.minimised=true; sheet(false); sheetCount(); return; }
   qbox.value=''; state.q=''; qclr.hidden=true;   // close = back to the idle panel
   clearSel(); draw();
 };
@@ -795,7 +803,7 @@ rback.onclick=()=>{
   draw();
   document.getElementById('results').scrollTop=0;
 };
-reopen.onclick=()=>sheet(true);
+reopen.onclick=()=>{ state.minimised=false; sheet(true); };
 addEventListener('keydown',e=>{if(e.key==='Escape'){drawer(false);sheet(false);}});
 
 // drag the header to raise or lower the sheet
@@ -816,7 +824,7 @@ rhead.addEventListener('pointerup',e=>{
   const pct=results.getBoundingClientRect().height/innerHeight*100;
   results.classList.remove('dragging');
   drag=null;
-  if(pct<24){ sheet(false); sheetCount(); return; }
+  if(pct<24){ state.minimised=true; sheet(false); sheetCount(); return; }
   sheet(true, pct>(FULL+HALF)/2 ? FULL : pct>(HALF+SMALL)/2 ? HALF : SMALL);
 });
 rhead.addEventListener('pointercancel',()=>{results.classList.remove('dragging');drag=null;});
@@ -843,7 +851,7 @@ f.oninput=years; t.oninput=years;
 years();
 const qbox=document.getElementById('q'), qclr=document.getElementById('qclr');
 qbox.oninput=e=>{
-  state.q=e.target.value; state.song=null; state.songFrom=null;
+  state.q=e.target.value; state.song=null; state.songFrom=null; state.minimised=false;
   qclr.hidden=!state.q;
   if(!state.q.trim()&&!state.sel) clearSel();
   draw();
@@ -862,7 +870,7 @@ function tallyText(nSongs,nPlaces){
          : 'Nothing matches these filters')
     : '<b id="ns">'+n.toLocaleString('en-US')+'</b> songs \u00B7 <b id="np">'+pl.toLocaleString('en-US')+'</b> places shown';
 }
-tally.onclick=()=>{ if(mob()) drawer(false); };
+tally.onclick=()=>{ if(mob()){ state.minimised=false; drawer(false); } };
 addEventListener('resize',()=>tallyText());
 
 map.on('click',clearSel);
@@ -878,6 +886,7 @@ document.getElementById('rlist').addEventListener('click',e=>{
   const song=btn?SONGS[+btn.dataset.i]:null;
   const z=Math.max(map.getZoom(),9);
   // remember which screen this was opened from, so back returns to that one
+  state.minimised=false;
   state.songFrom=state.sel?'place':'search';
   state.song=song?songKey(song):null;   // this song alone, on the map and in the list
   state.sel=p;
