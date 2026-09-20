@@ -13,7 +13,7 @@ ALIASES = os.path.join(ROOT, "data", "place_aliases.csv")
 REQUIRED = ["year", "title", "artist", "place", "place_category", "mention_type",
             "latitude", "longitude", "us_weekly", "us_yearly", "uk_weekly", "user_submission"]
 FLAG_COLS = {"grammy_hall_of_fame", "national_recording_registry", "rock_hall", "time",
-             "spotify_popular", "user_submission"}
+             "spotify_popular", "standard", "user_submission"}
 PLACE_COLS = {"place", "place_category", "mention_type", "latitude", "longitude"}
 # titles where two nested places are both the point of the song
 NESTED_OK = {("Hollywood's Not America", "Ferras")}
