@@ -257,7 +257,7 @@
     /* song list becomes a bottom sheet you can drag up and down */
     #results{
       position:fixed;left:0;right:0;bottom:0;z-index:1150;
-      height:var(--sh,62dvh);max-height:88dvh;
+      height:var(--sh,340px);max-height:var(--shmax,88dvh);
       background:var(--panel);border-top:1px solid var(--rule);
       border-radius:12px 12px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.5);
       transform:translateY(101%);transition:transform .22s ease;overflow-y:auto
@@ -760,12 +760,18 @@ scrim.onclick=()=>drawer(false);
 // --- the bottom sheet: open at a sensible height, drag to resize, minimise and restore ---
 const reopen=document.getElementById('reopen'), rhead=document.querySelector('.rhead');
 const FULL=88, HALF=52, SMALL=30;           // heights as a percentage of the viewport
+const vpx=pct=>Math.round(innerHeight*pct/100)+'px';
 function sheet(open,pct){
   if(!mob()) return;
-  if(pct) results.style.setProperty('--sh',pct+'dvh');
+  if(pct) results.style.setProperty('--sh',vpx(pct));
+  results.style.setProperty('--shmax',vpx(FULL));
   results.classList.toggle('up',open);
   reopen.classList.toggle('show',!open&&hasRows());
-  if(open) hideWhy();
+  if(open){
+    hideWhy();
+    // if anything left the sheet with no height, give it one in plain pixels
+    if(results.getBoundingClientRect().height<60) results.style.setProperty('--sh',vpx(HALF));
+  }
 }
 const hasRows=()=>!!document.querySelector('#rlist .song');
 const rowCount=()=>document.querySelectorAll('#rlist .song').length;
@@ -786,7 +792,10 @@ function headBtns(){
   }
   rback.hidden=!((state.sel&&state.q.trim())||state.song);
 }
-addEventListener('resize',headBtns);
+addEventListener('resize',()=>{
+  headBtns();
+  if(mob()&&results.classList.contains('up')) sheet(true, rowCount()<=3 ? SMALL : HALF);
+});
 rclose.onclick=()=>{
   if(mob()){ state.minimised=true; sheet(false); sheetCount(); return; }
   qbox.value=''; state.q=''; qclr.hidden=true;   // close = back to the idle panel
@@ -817,7 +826,7 @@ rhead.addEventListener('pointerdown',e=>{
 rhead.addEventListener('pointermove',e=>{
   if(!drag) return;
   const vh=innerHeight, pct=Math.max(12,Math.min(FULL,(drag.h-(e.clientY-drag.y))/vh*100));
-  results.style.setProperty('--sh',pct+'dvh');
+  results.style.setProperty('--sh',vpx(pct));
 });
 rhead.addEventListener('pointerup',e=>{
   if(!drag) return;
