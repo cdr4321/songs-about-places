@@ -5,8 +5,7 @@ if it reached the US Hot 100 or the UK Singles Chart, or appears on a major
 list of great songs (Rolling Stone 500, National Recording Registry, Grammy
 Hall of Fame and others). The `?` beside each title lists the reasons.
 
-Live at <https://cdr4321.github.io/songs-about-places/>, also embedded on
-chrisdallariva.com.
+Live at <https://cdr4321.github.io/songs-about-places/>, also embedded on https://www.chrisdallariva.com/songs-about-places.
 
 ## Files
 
@@ -105,21 +104,3 @@ The US workflow takes **weeks_back** instead.
 
 The matcher has a real false-positive rate: it cannot tell Ms. Jackson from
 Jackson, Mississippi. Nothing new goes live without a `y`.
-
-## Notes
-
-- **YouTube links are searches, not video IDs.** Clicking runs a YouTube search
-  for the title and artist. Hard-coded IDs would need an API key, and they rot
-  when videos are taken down.
-- **Attribution is required.** Map tiles are Esri Dark Gray Canvas over
-  OpenStreetMap data; the credit in the corner needs to stay.
-- **Why not CARTO?** It was the original choice, but CARTO began watermarking
-  keyless tiles with "API KEY REQUIRED" in August 2026 and is retiring its
-  raster service. Esri's equivalent needs no key. If you'd rather use CARTO,
-  get a free key at carto.com/basemaps/apikey and follow the commented block
-
-  near the top of the script in `index.html` — note the tile URLs order their
-  coordinates differently ({z}/{x}/{y} vs {z}/{y}/{x}).
-- The map needs a network connection: Leaflet, the tiles and the fonts load
-  from CDNs. The data files are read from this repo, so preview locally with
-  `python3 -m http.server`; opening index.html directly won't load them.
