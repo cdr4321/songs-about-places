@@ -17,7 +17,7 @@
     --ink:#F1EEE6; --mute:#7D9A9B; --rule:rgba(159,195,188,.18);
   }
   *{box-sizing:border-box}
-  html,body{height:100%;margin:0}
+  html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none;position:relative}
   body{
     background:var(--night); color:var(--ink);
     font:15px/1.5 "Spline Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
@@ -257,7 +257,7 @@
     /* song list becomes a bottom sheet you can drag up and down */
     #results{
       position:fixed;left:0;right:0;bottom:0;z-index:1150;
-      height:var(--sh,62dvh);max-height:88dvh;
+      height:var(--sh,340px);max-height:var(--shmax,88dvh);
       background:var(--panel);border-top:1px solid var(--rule);
       border-radius:12px 12px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.5);
       transform:translateY(101%);transition:transform .22s ease;overflow-y:auto
@@ -747,6 +747,7 @@ function drawer(open){
   scrim.hidden=!open;
   mfilter.setAttribute('aria-expanded',open);
   // results found while the filters were covering the map: show them on the way out
+  if(!open&&mob()) setTimeout(settle,60);
   if(!open&&mob()&&hasRows()){
     sheetCount(); sheet(true, rowCount()<=3 ? SMALL : HALF);
     // the sheet now covers part of the map: put the markers back in view
@@ -761,12 +762,18 @@ scrim.onclick=()=>drawer(false);
 // --- the bottom sheet: open at a sensible height, drag to resize, minimise and restore ---
 const reopen=document.getElementById('reopen'), rhead=document.querySelector('.rhead');
 const FULL=88, HALF=52, SMALL=30;           // heights as a percentage of the viewport
+const vpx=pct=>Math.round(innerHeight*pct/100)+'px';
 function sheet(open,pct){
   if(!mob()) return;
-  if(pct) results.style.setProperty('--sh',pct+'dvh');
+  if(pct) results.style.setProperty('--sh',vpx(pct));
+  results.style.setProperty('--shmax',vpx(FULL));
   results.classList.toggle('up',open);
   reopen.classList.toggle('show',!open&&hasRows());
-  if(open) hideWhy();
+  if(open){
+    hideWhy();
+    // if anything left the sheet with no height, give it one in plain pixels
+    if(results.getBoundingClientRect().height<60) results.style.setProperty('--sh',vpx(HALF));
+  }
 }
 const hasRows=()=>!!document.querySelector('#rlist .song');
 const rowCount=()=>document.querySelectorAll('#rlist .song').length;
@@ -787,7 +794,10 @@ function headBtns(){
   }
   rback.hidden=!((state.sel&&state.q.trim())||state.song);
 }
-addEventListener('resize',headBtns);
+addEventListener('resize',()=>{
+  headBtns(); settle();
+  if(mob()&&results.classList.contains('up')) sheet(true, rowCount()<=3 ? SMALL : HALF);
+});
 rclose.onclick=()=>{
   if(mob()){ state.minimised=true; sheet(false); sheetCount(); return; }
   qbox.value=''; state.q=''; qclr.hidden=true;   // close = back to the idle panel
@@ -818,7 +828,7 @@ rhead.addEventListener('pointerdown',e=>{
 rhead.addEventListener('pointermove',e=>{
   if(!drag) return;
   const vh=innerHeight, pct=Math.max(12,Math.min(FULL,(drag.h-(e.clientY-drag.y))/vh*100));
-  results.style.setProperty('--sh',pct+'dvh');
+  results.style.setProperty('--sh',vpx(pct));
 });
 rhead.addEventListener('pointerup',e=>{
   if(!drag) return;
@@ -875,6 +885,24 @@ tally.onclick=()=>{ if(mob()){ state.minimised=false; drawer(false); } };
 addEventListener('resize',()=>tallyText());
 
 map.on('click',clearSel);
+
+// iOS shifts the frame's viewport to show the keyboard and doesn't always put it
+// back. Left alone, the sheet lands off-screen and the map's clicks miss the markers.
+function settle(){
+  if(scrollY||scrollX) scrollTo(0,0);
+  if(document.documentElement.scrollTop) document.documentElement.scrollTop=0;
+  if(document.body.scrollTop) document.body.scrollTop=0;
+  map.invalidateSize({animate:false});
+  if(mob()&&results.classList.contains('up')&&results.getBoundingClientRect().height<60)
+    sheet(true, rowCount()<=3 ? SMALL : HALF);
+}
+qbox.addEventListener('blur',()=>setTimeout(settle,120));
+addEventListener('orientationchange',()=>setTimeout(settle,250));
+addEventListener('pageshow',settle);
+if(window.visualViewport){
+  visualViewport.addEventListener('resize',()=>setTimeout(settle,80));
+  visualViewport.addEventListener('scroll',()=>setTimeout(settle,80));
+}
 
 // tapping a row anywhere but the title or the ? jumps to that place on the map
 document.getElementById('rlist').addEventListener('click',e=>{
