@@ -190,6 +190,12 @@
   .leaflet-bar a:hover{background:var(--night-2);color:var(--dial)}
   :focus-visible{outline:2px solid var(--dial);outline-offset:2px}
   .nowrap{white-space:nowrap}
+  /* diagnostics: only with ?debug in the URL */
+  #dbg{
+    position:fixed;top:0;left:0;z-index:5000;margin:0;padding:6px 8px;pointer-events:none;
+    background:rgba(0,0,0,.82);color:#7CE3B1;font:10px/1.35 ui-monospace,monospace;white-space:pre
+  }
+  #dbg[hidden]{display:none}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
   /* keep the side-by-side layout down to a much narrower width by shrinking
@@ -410,6 +416,7 @@
   </aside>
   <main><div id="map"></div></main>
   <div id="whybox" role="tooltip" hidden></div>
+  <pre id="dbg" hidden></pre>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -902,6 +909,27 @@ addEventListener('pageshow',settle);
 if(window.visualViewport){
   visualViewport.addEventListener('resize',()=>setTimeout(settle,80));
   visualViewport.addEventListener('scroll',()=>setTimeout(settle,80));
+}
+
+// ?debug in the URL shows what the page thinks is going on, including which
+// element is actually on top of the middle of the map
+if(/(\?|&)debug/.test(location.search)){
+  const dbg=document.getElementById('dbg');
+  dbg.hidden=false;
+  setInterval(()=>{
+    const r=results.getBoundingClientRect();
+    const m=document.getElementById('map').getBoundingClientRect();
+    const hit=document.elementFromPoint(m.left+m.width/2,m.top+m.height/3);
+    const name=el=>el?el.tagName.toLowerCase()+(el.id?'#'+el.id:'')+(el.className&&el.className.baseVal===undefined&&typeof el.className==='string'?'.'+el.className.trim().split(/\s+/).join('.'):''):'none';
+    const vv=window.visualViewport;
+    dbg.textContent=
+      'win '+innerWidth+'x'+innerHeight+'  scroll '+Math.round(scrollX)+','+Math.round(scrollY)+'\n'+
+      (vv?'vv  '+Math.round(vv.width)+'x'+Math.round(vv.height)+' off '+Math.round(vv.offsetLeft)+','+Math.round(vv.offsetTop)+' scale '+vv.scale.toFixed(2)+'\n':'')+
+      'sheet up='+results.classList.contains('up')+' h='+Math.round(r.height)+' top='+Math.round(r.top)+' sh='+(results.style.getPropertyValue('--sh')||'-')+'\n'+
+      'rows='+rowCount()+' vis='+VIS.length+' min='+state.minimised+' drawer='+side.classList.contains('open')+'\n'+
+      'mapTop='+Math.round(m.top)+' h='+Math.round(m.height)+' pill='+reopen.classList.contains('show')+'\n'+
+      'on top of map: '+name(hit);
+  },400);
 }
 
 // tapping a row anywhere but the title or the ? jumps to that place on the map
