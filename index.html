@@ -834,6 +834,8 @@ rback.onclick=()=>{
   else state.sel=null;
   draw();
   document.getElementById('results').scrollTop=0;
+  // back at the search results: pull the map out to show all of them again
+  if(!state.sel&&state.q.trim()){ fitKey=''; setTimeout(()=>fitTo(VIS),60); }
 };
 reopen.onclick=()=>{ state.minimised=false; sheet(true); };
 addEventListener('keydown',e=>{if(e.key==='Escape'){drawer(false);sheet(false);}});
