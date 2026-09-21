@@ -602,6 +602,7 @@ const short=chain=>chain.split(', ')[0];
 function radius(n){return Math.min(26,7+Math.sqrt(n)*3.1);}
 
 let VIS=[];
+let backView=null, centreTimer=0;   // the view to return to, and a pending zoom-in
 function showSheet(){
   // the only reason not to show results on a phone is that the reader minimised
   // them or the filter drawer is covering the map
@@ -670,13 +671,13 @@ function centreOn(lat,lon,zoom){
 
 // move the map to the places a search matched, without zooming in absurdly far
 let fitKey='';
-function fitTo(vis){
+function fitTo(vis,animate=true){
   const key=state.q.trim().toLowerCase()+'|'+vis.map(p=>p.p).join('|');
   if(!vis.length||key===fitKey) return;
   fitKey=key;
   const b=L.latLngBounds(vis.map(p=>[p.lat,p.lon]));
   const sheetPx=mob()&&results.classList.contains('up') ? results.getBoundingClientRect().height : 0;
-  map.fitBounds(b,{padding:[36,36],paddingBottomRight:[0,sheetPx],maxZoom:vis.length===1?8:7,animate:true});
+  map.fitBounds(b,{padding:[36,36],paddingBottomRight:[0,sheetPx],maxZoom:vis.length===1?8:7,animate});
 }
 
 function showMatches(vis,nSongs){
@@ -739,7 +740,7 @@ function idle(){
   document.getElementById('rlist').innerHTML='<p class="empty">Every marker is a place named in a song title. Bigger markers carry more songs.</p>';
 }
 function clearSel(){
-  state.sel=null; state.song=null; state.songFrom=null;
+  state.sel=null; state.song=null; state.songFrom=null; backView=null;
   if(mob()){ results.classList.remove('up'); reopen.classList.remove('show'); }
   idle();
 }
@@ -825,6 +826,8 @@ rclose.onclick=()=>{
   clearSel(); draw();
 };
 rback.onclick=()=>{
+  clearTimeout(centreTimer);          // a zoom-in still pending must not land after this
+  const view=state.song?backView:null;
   // back goes to the screen you came from: the place list, or the search results
   if(state.song){
     state.song=null;
@@ -834,8 +837,14 @@ rback.onclick=()=>{
   else state.sel=null;
   draw();
   document.getElementById('results').scrollTop=0;
-  // back at the search results: pull the map out to show all of them again
-  if(!state.sel&&state.q.trim()){ fitKey=''; setTimeout(()=>fitTo(VIS),60); }
+  if(view){
+    // straight back to the view you had before opening the song
+    map.stop(); map.setView(view.centre,view.zoom,{animate:false});
+    backView=null;
+  }else if(!state.sel&&state.q.trim()){
+    // from a place back to the results: fit all of them
+    map.stop(); fitKey=''; fitTo(VIS,false);
+  }
 };
 reopen.onclick=()=>{ state.minimised=false; sheet(true); };
 addEventListener('keydown',e=>{if(e.key==='Escape'){drawer(false);sheet(false);}});
@@ -961,12 +970,15 @@ document.getElementById('rlist').addEventListener('click',e=>{
   // remember which screen this was opened from, so back returns to that one
   state.minimised=false;
   state.songFrom=state.sel?'place':'search';
+  // remember exactly what the map showed, so back can put it back
+  backView={centre:map.getCenter(), zoom:map.getZoom()};
   state.song=song?songKey(song):null;   // this song alone, on the map and in the list
   state.sel=p;
   draw();                               // recompute with the single-song filter
   results.scrollTop=0;
   if(mob()){ sheetCount(); sheet(true,SMALL); }
-  setTimeout(()=>centreOn(p.lat,p.lon,z),240);   // after the sheet has settled
+  clearTimeout(centreTimer);
+  centreTimer=setTimeout(()=>centreOn(p.lat,p.lon,z),240);   // after the sheet has settled
 });
 
 // Enter dismisses the on-screen keyboard rather than doing nothing
