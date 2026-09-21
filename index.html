@@ -747,6 +747,20 @@ function clearSel(){
 // --- mobile drawer + bottom sheet ---
 const side=document.getElementById('side'), scrim=document.getElementById('scrim'),
       mfilter=document.getElementById('mfilter'), results=document.getElementById('results');
+
+// On a phone the song list is a fixed bottom sheet, and it must NOT live inside the
+// filter drawer: the drawer is an off-screen scrolling panel, and iOS Safari clips a
+// fixed element to a scrolling ancestor once that ancestor becomes scrollable (which
+// happens as soon as a filter group is opened). The sheet then lays out correctly
+// but paints inside the hidden drawer, so it is invisible. On a phone the sheet is
+// therefore moved to <body>; on a wide screen it goes back into the sidebar column.
+const resultsHome=results.parentNode, resultsNext=results.nextSibling;
+function placeResults(){
+  if(mob()){ if(results.parentNode!==document.body) document.body.appendChild(results); }
+  else if(results.parentNode!==resultsHome) resultsHome.insertBefore(results,resultsNext);
+}
+placeResults();
+addEventListener('resize',placeResults);
 function drawer(open){
   // the drawer sits over the sheet, clipping its buttons: lower the sheet while it is open
   if(open&&mob()) results.classList.remove('up');
