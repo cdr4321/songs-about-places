@@ -1,4 +1,4 @@
-year,title,artist,place,place_category,mention_type,latitude,longitude,us_weekly,us_yearly,uk_weekly,acclaimed_music,ascap,blender,grammy_hall_of_fame,national_recording_registry,npr,riaa,rock_hall,rolling_stone,time,standard,spotify_popular,user_submission
+﻿year,title,artist,place,place_category,mention_type,latitude,longitude,us_weekly,us_yearly,uk_weekly,acclaimed_music,ascap,blender,grammy_hall_of_fame,national_recording_registry,npr,riaa,rock_hall,rolling_stone,time,standard,spotify_popular,user_submission
 1897,Yankee Doodle,Vess L. Ossman,"United States, North America",Country,Demonym,38.8951,-77.0364,,,,7910,,,,,,,,,,,,
 1898,Honolulu Cake Walk,Vess L. Ossman,"Honolulu, Hawaii, United States, North America",City,Direct,21.3259,-157.8453,,,,7580,,,,Y,,,,,,,,
 1905,Give My Regards to Broadway,Billy Murray,"Broadway, New York, New York, United States, North America",Street/Landmark,Direct,40.759,-73.9845,,,,5736,,,Y,,19,,,,,,,
@@ -1803,7 +1803,7 @@ year,title,artist,place,place_category,mention_type,latitude,longitude,us_weekly
 2025,Sirens (From Ireland),Skepta ft. Finessekid,"Ireland, Europe",Country,Direct,53.3331,-6.2489,,,66,,,,,,,,,,,,,
 2026,American Cars,Noah Kahan,"United States, North America",Country,Demonym,38.8951,-77.0364,16,,,,,,,,,,,,,,,
 2026,American Girls,Harry Styles,"United States, North America",Country,Demonym,38.8951,-77.0364,4,,1,,,,,,,,,,,,,
-2026,Boston,Stella Lefty,"Boston, Massachusetts, United States, North America",City,Direct,42.332,-71.0202,2,,4,,,,,,,,,,,,,
+2026,Boston,Stella Lefty,"Boston, Massachusetts, United States, North America",City,Direct,42.332,-71.0202,2,,3,,,,,,,,,,,,,
 2026,California Girls,Future,"California, United States, North America",State/Region,Direct,36.116,-119.682,23,,,,,,,,,,,,,,,
 2026,Damn I Love Miami,Pitbull and Lil Jon,"Miami, Florida, United States, North America",City,Direct,25.7752,-80.2086,76,,,,,,,,,,,,,,,
 2026,Long Way to Calabasas,Don Toliver,"Calabasas, California, United States, North America",City,Direct,34.1338,-118.6689,63,,,,,,,,,,,,,,,
