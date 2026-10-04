@@ -56,6 +56,10 @@ def main():
                 keep.append(q)
                 continue
             place = q["place"].strip()
+            if not q["year"].strip().isdigit():
+                held.append((q, "no year — fill in the release year"))
+                keep.append(q)
+                continue
             if place not in places and not (q["latitude"].strip() and q["longitude"].strip()):
                 held.append((q, "new place with no coordinates"))
                 keep.append(q)

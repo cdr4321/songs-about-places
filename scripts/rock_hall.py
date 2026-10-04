@@ -46,7 +46,9 @@ class Inductees:
             names = [r["inductee"]] + [x.strip() for x in r.get("credit_names", "").split(";") if x.strip()]
             for v in sorted({_variant(n) for n in names if _variant(n)}, key=len, reverse=True):
                 body = r"(?:\s+|\s*,\s*)".join(map(re.escape, re.findall(r"[a-z0-9]+", v)))
-                self.pats.append((r["inductee"], re.compile(rf"(?:^|{SEP})(?:the\s+)?{body}(?=$|{SEP})")))
+                # "Hank Williams, Jr." is the son, not the inductee
+                self.pats.append((r["inductee"], re.compile(
+                    rf"(?:^|{SEP})(?:the\s+)?{body}(?!\s*,?\s*(?:jr|ii|iii)\b)(?=$|{SEP})")))
 
     def in_credit(self, artist, year=None):
         """Inductees named in an artist credit, in the order found."""

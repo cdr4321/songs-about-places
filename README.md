@@ -149,7 +149,15 @@ EPs and singles of every inductee, taken from MusicBrainz:
 2. `python scripts/rock_hall_candidates.py` matches those track titles
    against the place terms and writes the queue. Songs already in
    `data/songs.csv` aren't queued; they just get `rock_hall_inductee`.
-3. Review the queue as above. Its extra columns (`inductee`, `release`,
-   `release_type`, `musicbrainz`) show where each song came from. `year` is
-   the earliest release of that title by that act. A rejected row goes to
+3. Review the queue as above. `suggest` holds a first-pass reading of each
+   row (`y`, `n — why`, or `? — what to check`); nothing is approved until
+   `approved` says so. The other extra columns (`inductee`, `release`,
+   `release_type`, `credited_as`, `musicbrainz`) show where each song came
+   from. `year` is the earliest release of that title by that act; rows
+   without one are held back until it's filled in. A rejected row goes to
    `review/rock_hall/rejected.csv` rather than the weekly checks' block list.
+
+Re-running the scan or `rock_hall_candidates.py` keeps what's already in the
+queue (decisions, corrected places, years). Songs released only on live
+albums or compilations, or where an inductee is a guest on someone else's
+album track, aren't in MusicBrainz's release-group credits and won't be found.
