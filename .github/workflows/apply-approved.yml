@@ -7,6 +7,7 @@ on:
     paths:
       - "review/us_candidates.csv"
       - "review/uk_candidates.csv"
+      - "review/rock_hall_candidates.csv"
   workflow_dispatch:
 
 permissions:

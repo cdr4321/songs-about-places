@@ -8,11 +8,12 @@ catches are things Excel does silently when it saves a CSV.
 """
 import collections, csv, io, os, re, sys
 from common import CATEGORIES, MENTIONS, ROOT, SONGS
+from rock_hall import Inductees
 
 ALIASES = os.path.join(ROOT, "data", "place_aliases.csv")
 REQUIRED = ["year", "title", "artist", "place", "place_category", "mention_type",
             "latitude", "longitude", "us_weekly", "us_yearly", "uk_weekly", "user_submission"]
-FLAG_COLS = {"grammy_hall_of_fame", "national_recording_registry", "rock_hall", "time",
+FLAG_COLS = {"grammy_hall_of_fame", "national_recording_registry", "rock_hall", "rock_hall_inductee", "time",
              "spotify_popular", "standard", "eurovision", "user_submission"}
 PLACE_COLS = {"place", "place_category", "mention_type", "latitude", "longitude"}
 # titles where two nested places are both the point of the song
@@ -118,6 +119,18 @@ def main():
             warn.append(f"{at}: year or list/chart values differ from line {song_meta[key][1]} "
                         f"for the same song — the tooltip will show the first row's values")
         song_meta.setdefault(key, (sm, i))
+
+    if "rock_hall_inductee" in cols:
+        inductees, told = Inductees(), set()
+        for i, r in enumerate(rows, start=2):
+            if r["rock_hall_inductee"].strip() or (r["title"], r["artist"]) in told:
+                continue
+            who = inductees.in_credit(r["artist"], r["year"])
+            if who:
+                told.add((r["title"], r["artist"]))
+                warn.append(f"line {i} ({r['title']!r}): {r['artist']} names Rock Hall inductee "
+                            f"{who[0]} — set rock_hall_inductee to Y (or add the namesake to "
+                            "credit_years in review/rock_hall/inductees.csv)")
 
     for (t, a), ps in nested.items():
         if (t, a) in NESTED_OK:

@@ -1,9 +1,10 @@
 # Songs About Places
 
 An interactive map of songs whose titles name a real place. A song is included
-if it reached the US Hot 100 or the UK Singles Chart, or appears on a major
-list of great songs (Rolling Stone 500, National Recording Registry, Grammy
-Hall of Fame and others). The `?` beside each title lists the reasons.
+if it reached the US Hot 100 or the UK Singles Chart, appears on a major list
+of great songs (Rolling Stone 500, National Recording Registry, Grammy Hall of
+Fame and others), or is by a Rock & Roll Hall of Fame inductee. The `?` beside
+each title lists the reasons.
 
 Live at <https://cdr4321.github.io/songs-about-places/>, also embedded on https://www.chrisdallariva.com/songs-about-places.
 
@@ -15,6 +16,8 @@ data/songs.csv                      the dataset: one row per song per place
 data/place_aliases.csv              extra search words for a place ("usa", "windy city")
 review/us_candidates.csv            US review queue (written by the weekly check)
 review/uk_candidates.csv            UK review queue (written by the weekly check)
+review/rock_hall_candidates.csv     Rock Hall review queue (inductees' album and single tracks)
+review/rock_hall/                   Rock Hall inductee list and the MusicBrainz scan behind that queue
 scripts/find_new_place_songs.py     weekly US Hot 100 check
 scripts/find_new_uk_place_songs.py  weekly UK Singles Chart check
 scripts/weekly.py                   the part of the check both charts share
@@ -22,6 +25,9 @@ scripts/apply_approved.py           moves approved queue rows into data/songs.cs
 scripts/validate_data.py            checks data/songs.csv before the site uses it
 scripts/common.py                   matching and CSV helpers
 scripts/place_terms.json            place names the matcher looks for, and blocked title/term pairs
+scripts/rock_hall.py                which artist credits name a Rock Hall inductee
+scripts/rock_hall_scan.py           pulls inductees' track lists from MusicBrainz (GitHub Action)
+scripts/rock_hall_candidates.py     turns those track lists into the Rock Hall review queue
 ```
 
 ## data/songs.csv
@@ -41,7 +47,8 @@ validator will reject the file.
 | `us_weekly`, `uk_weekly` | best weekly chart peak |
 | `us_yearly` | US year-end rank |
 | `acclaimed_music`, `ascap`, `blender`, `npr`, `riaa`, `rolling_stone` | the song's rank on that list |
-| `grammy_hall_of_fame`, `national_recording_registry`, `rock_hall`, `time`, `standard`, `spotify_popular` | `y` if the song is on it |
+| `grammy_hall_of_fame`, `national_recording_registry`, `rock_hall`, `time`, `standard`, `spotify_popular` | `y` if the song is on it (`rock_hall` = Rock Hall Songs that Shaped Rock) |
+| `rock_hall_inductee` | `y` if the artist credit names a Rock & Roll Hall of Fame inductee: lead act, billed partner or `ft.` guest |
 | `eurovision` | `y` if the song was a Eurovision Song Contest entry (semi-finalists count) |
 | `user_submission` | `y` if a reader suggested the song |
 
@@ -52,7 +59,26 @@ of the song ("Hollywood's Not America" keeps both).
 
 Every row needs at least one list or chart value. To add a list, add a column,
 give it a label in `REASONS` near the top of the script in `index.html`, and
-add it to `KNOWN` in `validate_data.py`.
+add it to `KNOWN` in `validate_data.py`. Columns that share a chip label in
+`REASONS` share one filter chip: `rock_hall` and `rock_hall_inductee` are both
+under **Rock Hall**, while the `?` popover still says which applies.
+
+### Rock Hall inductees
+
+`review/rock_hall/inductees.csv` lists every inductee: performers, early
+influences and Musical Excellence (formerly Sidemen) inductees. Its columns:
+
+| column | what goes in it |
+|---|---|
+| `wikipedia` | the inductee's Wikipedia article; the scan finds the MusicBrainz artist through it |
+| `extra` | other acts to scan: `wiki:Article` or `name:MusicBrainz name`, with `\|note` for a side band whose credit doesn't name the inductee (Wings, Derek and the Dominos) |
+| `credit_names` | other credits that count, separated by `;` (`Daryl Hall and John Oates`) |
+| `credit_years` | for a namesake, the years the inductee recorded (`-1933` for Jimmie Rodgers) |
+
+When a song is approved from any queue, `apply_approved.py` sets
+`rock_hall_inductee` if its credit names an inductee, and `validate_data.py`
+warns about inductee songs missing the flag. After a new induction class,
+add its rows to `inductees.csv`.
 
 `validate_data.py` runs on every commit that touches `data/` (Actions tab,
 *Validate data*). Its messages name the line and what to fix.
@@ -105,3 +131,25 @@ The US workflow takes **weeks_back** instead.
 
 The matcher has a real false-positive rate: it cannot tell Ms. Jackson from
 Jackson, Mississippi. Nothing new goes live without a `y`.
+
+## The Rock Hall scan
+
+`review/rock_hall_candidates.csv` holds place-songs from the studio albums,
+EPs and singles of every inductee, taken from MusicBrainz:
+
+1. *Rock Hall discography scan* (`.github/workflows/rock-hall-scan.yml`) runs
+   on the `rock-hall-scan` branch whenever `review/rock_hall/inductees.csv`
+   changes there, or by hand. It finds each inductee on MusicBrainz through
+   Wikipedia and Wikidata, keeps album, EP and single release groups with no
+   secondary type except Soundtrack (no live albums, compilations, remixes,
+   mixtapes or demos), and takes each one's earliest official release, so
+   deluxe-edition bonus tracks stay out. It commits `artists.csv`,
+   `release_groups.csv` and `tracks.csv.gz` to `review/rock_hall/` (about
+   1.5 hours; MusicBrainz allows one request a second).
+2. `python scripts/rock_hall_candidates.py` matches those track titles
+   against the place terms and writes the queue. Songs already in
+   `data/songs.csv` aren't queued; they just get `rock_hall_inductee`.
+3. Review the queue as above. Its extra columns (`inductee`, `release`,
+   `release_type`, `musicbrainz`) show where each song came from. `year` is
+   the earliest release of that title by that act. A rejected row goes to
+   `review/rock_hall/rejected.csv` rather than the weekly checks' block list.
