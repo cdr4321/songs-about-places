@@ -1,0 +1,102 @@
+name: Rock Hall discography scan
+
+# Pulls every Rock & Roll Hall of Fame inductee's studio albums, EPs and
+# singles from MusicBrainz (see scripts/rock_hall_scan.py) and commits the
+# track lists to review/rock_hall/ on this branch. Nothing here touches
+# data/songs.csv or the live site.
+#
+# Runs when review/rock_hall/inductees.csv or the scan script changes on the
+# rock-hall-scan branch, or by hand from the Actions tab.
+
+on:
+  push:
+    branches: [rock-hall-scan]
+    paths:
+      - review/rock_hall/inductees.csv
+      - scripts/rock_hall_scan.py
+      - .github/workflows/rock-hall-scan.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rock-hall-scan
+  cancel-in-progress: false
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Find each inductee on MusicBrainz and list their release groups
+        run: python scripts/rock_hall_scan.py resolve
+      - uses: actions/upload-artifact@v4
+        with:
+          name: resolved
+          path: |
+            review/rock_hall/artists.csv
+            review/rock_hall/release_groups.csv
+            scan_out/resolve_log.txt
+
+  scan:
+    needs: resolve
+    runs-on: ubuntu-latest
+    timeout-minutes: 345
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: resolved
+          path: .
+      - name: Fetch track lists (shard ${{ matrix.shard }} of 8)
+        run: python scripts/rock_hall_scan.py scan ${{ matrix.shard }} 8
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tracks-${{ matrix.shard }}
+          path: scan_out/
+
+  combine:
+    needs: [resolve, scan]
+    if: always() && needs.resolve.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: resolved
+          path: .
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: tracks-*
+          path: scan_out/
+      - name: Combine the shards
+        run: python scripts/rock_hall_scan.py combine
+      - name: Commit the results to this branch
+        run: |
+          cp scan_out/resolve_log.txt review/rock_hall/ 2>/dev/null || true
+          git config user.name "songs-about-places bot"
+          git config user.email "actions@github.com"
+          git add review/rock_hall/
+          if git diff --staged --quiet; then
+            echo "Nothing changed."
+          else
+            git commit -m "Rock Hall scan: MusicBrainz track lists"
+            git pull --rebase
+            git push
+          fi
