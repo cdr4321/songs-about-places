@@ -41,7 +41,8 @@ validator will reject the file.
 | `us_weekly`, `uk_weekly` | best weekly chart peak |
 | `us_yearly` | US year-end rank |
 | `acclaimed_music`, `ascap`, `blender`, `npr`, `riaa`, `rolling_stone` | the song's rank on that list |
-| `grammy_hall_of_fame`, `national_recording_registry`, `rock_hall`, `time`, `spotify_popular` | `y` if the song is on it |
+| `grammy_hall_of_fame`, `national_recording_registry`, `rock_hall`, `time`, `standard`, `spotify_popular` | `y` if the song is on it |
+| `eurovision` | `y` if the song was a Eurovision Song Contest entry (semi-finalists count) |
 | `user_submission` | `y` if a reader suggested the song |
 
 A song naming several places has one row per place, and those rows share the
