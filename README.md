@@ -44,7 +44,7 @@ validator will reject the file.
 | `place_category` | City, Country, State/Region, Continent/Region, Street/Landmark, Neighborhood/District, Water/Natural Feature |
 | `mention_type` | Direct, Demonym or Nickname |
 | `latitude`, `longitude` | decimal degrees; every row for a place must use the same pin |
-| `us_weekly`, `uk_weekly` | best weekly chart peak |
+| `us_weekly`, `uk_weekly` | best weekly chart peak. Before the Hot 100 (1940–58 Best Sellers), a B-side shares its A side's peak; if the song also charted on its own, the better of the two counts |
 | `us_yearly` | US year-end rank |
 | `acclaimed_music`, `ascap`, `blender`, `npr`, `riaa`, `rolling_stone` | the song's rank on that list |
 | `grammy_hall_of_fame`, `national_recording_registry`, `rock_hall`, `time`, `standard`, `spotify_popular` | `y` if the song is on it (`rock_hall` = Rock Hall Songs that Shaped Rock) |
