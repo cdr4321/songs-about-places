@@ -1,0 +1,8 @@
+shards: 8
+release groups wanted: 22701
+release groups with a track list: 21607
+release groups that failed (rerun to fill): 0
+track rows: 120827
+
+failed:
+

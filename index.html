@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Songs About Places</title>
-<meta name="description" content="An interactive map of songs whose titles name real places, from the US and UK charts and the best-known lists of great songs." />
+<meta name="description" content="An interactive map of songs whose titles name real places, from the US and UK charts, the best-known lists of great songs, and Rock &amp; Roll Hall of Fame artists." />
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -425,7 +425,8 @@
 const CATS=['City','Country','State/Region','Continent/Region','Street/Landmark','Neighborhood/District','Water/Natural Feature'];
 const MENTS=['Direct','Demonym','Nickname'];
 // Why a song is on the map: column in data/songs.csv, label shown in the ? popover,
-// and how to show the value ("peak"/"rank" print the number, "flag" means a y).
+// how to show the value ("peak"/"rank" print the number, "flag" means a y), and
+// the filter chip it falls under (columns sharing a chip label share one chip).
 const REASONS=[
   ['us_weekly','US Weekly Hot 100','peak','US Hot 100'],
   ['us_yearly','US Yearly Hot 100','rank','US year-end'],
@@ -435,7 +436,8 @@ const REASONS=[
   ['npr','NPR 100','rank','NPR 100'],
   ['blender','Blender 500 Songs Since You Were Born','rank','Blender 500'],
   ['riaa','RIAA Songs of the 20th Century','rank','RIAA 20th century'],
-  ['rock_hall','Rock Hall Songs that Shaped Rock','flag','Rock Hall 500'],
+  ['rock_hall','Rock Hall Songs that Shaped Rock','flag','Rock Hall'],
+  ['rock_hall_inductee','By a Rock & Roll Hall of Fame inductee','flag','Rock Hall'],
   ['time','Time 100','flag','Time 100'],
   ['acclaimed_music','AcclaimedMusic.net 10k','rank','AcclaimedMusic'],
   ['national_recording_registry','National Recording Registry','flag','Recording Registry'],
@@ -454,11 +456,12 @@ const SERVICES=[
   ['audiomack','Audiomack',q=>'https://audiomack.com/search?q='+encodeURIComponent(q)],
 ];
 const FIELDS=[['place','Location'],['title','Song title'],['artist','Artist']];
-const REASON_COLS=REASONS.map(r=>r[0]);
+const REASON_CHIPS=[...new Set(REASONS.map(r=>r[3]))];
+const CHIP_OF=Object.fromEntries(REASONS.map(r=>[r[0],r[3]]));
 // sessionStorage is blocked in some cross-site iframes, so never let it throw
 const remember=(k,v)=>{try{sessionStorage.setItem(k,v);}catch(e){}};
 const recall=k=>{try{return sessionStorage.getItem(k);}catch(e){return null;}};
-const state={cats:new Set(CATS),ments:new Set(MENTS),reasons:new Set(REASON_COLS),
+const state={cats:new Set(CATS),ments:new Set(MENTS),reasons:new Set(REASON_CHIPS),
              fields:new Set(FIELDS.map(f=>f[0])),from:1890,to:2030,q:'',sel:null,
              svc:recall('svc')||'youtube',song:null,songFrom:null,minimised:false};
 const touch=matchMedia('(hover:none)').matches;
@@ -519,7 +522,7 @@ function chips(el,list,set,g){
 const GROUPS={
   cats:   {set:state.cats,    values:CATS.map(v=>[v,v])},
   ments:  {set:state.ments,   values:MENTS.map(v=>[v,v])},
-  reasons:{set:state.reasons, values:REASONS.map(r=>[r[0],r[3]])},
+  reasons:{set:state.reasons, values:REASON_CHIPS.map(c=>[c,c])},
   fields: {set:state.fields,  values:FIELDS},
 };
 Object.entries(GROUPS).forEach(([g,{set,values}])=>{
@@ -576,7 +579,7 @@ const songKey=s=>s.t+'\u0000'+s.a+'\u0000'+s.y;
 function songsOf(p,q,placeHit){
   return p.s.filter(s=>{
     if(!state.ments.has(s.m)||s.y<state.from||s.y>state.to) return false;
-    if(!s.r.some(r=>state.reasons.has(r.col))) return false;
+    if(!s.r.some(r=>state.reasons.has(CHIP_OF[r.col]))) return false;
     if(state.song&&songKey(s)!==state.song) return false;
     if(!q||placeHit) return true;
     return (state.fields.has('title')&&s.t.toLowerCase().includes(q))

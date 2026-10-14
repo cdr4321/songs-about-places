@@ -43,6 +43,7 @@ def load_songs():
 
 
 def queue_path(chart):
+    # us, uk, and rock_hall (inductees' album and single tracks, see rock_hall_candidates.py)
     return os.path.join(REVIEW, f"{chart}_candidates.csv")
 
 
@@ -53,10 +54,17 @@ def load_queue(chart):
     return read_csv(p)[1]
 
 
-def save_queue(chart, rows):
+def save_queue(chart, rows, extra_cols=()):
     os.makedirs(REVIEW, exist_ok=True)
-    rows.sort(key=lambda r: (r["chart_week"], r["title"], r["place"]))
-    write_csv(queue_path(chart), QUEUE_COLS, rows)
+    # a queue may carry review-only columns after the standard ones (the Rock
+    # Hall queue lists the inductee and release); keep them on a rewrite
+    extra = list(extra_cols) + [k for r in rows for k in r if k not in QUEUE_COLS]
+    cols = QUEUE_COLS + [c for c in dict.fromkeys(extra) if c not in QUEUE_COLS]
+    if chart == "rock_hall":
+        rows.sort(key=lambda r: (r.get("inductee", ""), r["year"], r["title"], r["place"]))
+    else:
+        rows.sort(key=lambda r: (r["chart_week"], r["title"], r["place"]))
+    write_csv(queue_path(chart), cols, rows)
 
 
 def load_terms():
