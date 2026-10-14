@@ -68,9 +68,18 @@ def save_queue(chart, rows, extra_cols=()):
 
 
 def load_terms():
+    """The term list keyed the way extract() reads titles, so names written
+    with accents, hyphens or full stops ('córdoba', 'st. louis') still match.
+    Where two spellings reduce to the same key, the plain one wins."""
     with open(TERMS, encoding="utf-8") as fh:
         cfg = json.load(fh)
-    return cfg["terms"], cfg.get("blocked", [])
+    raw = cfg["terms"]
+    terms = {}
+    for k in sorted(raw, key=lambda k: term_key(k) != k):
+        terms.setdefault(term_key(k), raw[k])
+    terms.pop("", None)
+    blocked = [[term_key(t), title] for t, title in cfg.get("blocked", [])]
+    return terms, blocked
 
 
 # ------------------------------------------------------------ normalising
@@ -127,14 +136,55 @@ class SongIndex:
 # ------------------------------------------------------------ matching
 TOK = re.compile(r"[a-z0-9']+")
 ANNOT = re.compile(r'\((?:from\s+"|live\b|feat\b)[^)]*\)|\([^)]*(?:version|remix|mix|edit)\s*\)', re.I)
+# curly apostrophes count as apostrophes and dashes as spaces; ascii_() would
+# otherwise drop them and run words together ("Martha’s" -> "marthas"). Letters
+# with no accent-free form are spelled out rather than dropped ("Đà Lạt").
+_PUNCT = str.maketrans({"’": "'", "‘": "'", "‐": " ", "‑": " ",
+                        "–": " ", "—": " ",
+                        "Đ": "D", "đ": "d", "Ð": "D", "ð": "d", "Ł": "L", "ł": "l",
+                        "Ø": "O", "ø": "o", "ß": "ss", "Æ": "Ae", "æ": "ae", "Œ": "Oe",
+                        "œ": "oe", "ı": "i", "Þ": "Th", "þ": "th", "ħ": "h"})
 
 
 def tokens(title):
-    return TOK.findall(ANNOT.sub(" ", ascii_(title)).replace("&", " and ").lower())
+    return TOK.findall(ANNOT.sub(" ", ascii_(str(title).translate(_PUNCT))).replace("&", " and ").lower())
+
+
+def term_key(name):
+    """A place name the way extract() reads a title: 'São Paulo' -> 'sao paulo',
+    'St. John's' -> "st john's", 'Guinea-Bissau' -> 'guinea bissau'."""
+    return " ".join(tokens(name)).strip("'")
 
 
 def depossess(word):
     return re.sub(r"'s$", "", re.sub(r"s'$", "s", word))
+
+
+# Abbreviations in titles: "Carnaby St." is Carnaby Street, "Mt. Vernon" is
+# Mount Vernon, "Saint Louis" and "St. Louis" are the same place.
+ABBR_LAST = {"st": "street", "ave": "avenue", "rd": "road", "blvd": "boulevard"}
+ABBR_FIRST = {"st": "saint", "saint": "st", "mt": "mount", "ft": "fort"}
+
+
+def _spellings(words):
+    """An n-gram as written, then with possessives dropped, then with
+    abbreviations spelled out."""
+    firsts = [words[0]] + ([ABBR_FIRST[words[0]]] if len(words) > 1 and words[0] in ABBR_FIRST else [])
+    lasts = [words[-1]] + ([ABBR_LAST[words[-1]]] if len(words) > 1 and words[-1] in ABBR_LAST else [])
+    out = [" ".join(words).strip("'"), " ".join(depossess(x) for x in words).strip("'")]
+    for f in firsts:
+        for la in lasts:
+            # spelled-out forms keep possessives: "St Paul's" is not Saint Paul, Minnesota
+            p = " ".join([f] + words[1:-1] + [la] if len(words) > 1 else [f]).strip("'")
+            if p not in out:
+                out.append(p)
+    return out
+
+
+def _inside_initials(T, i, n):
+    """'L.A.' inside 'G.L.A.D.': the n-gram is all single letters and so is a neighbour."""
+    return (all(len(w) == 1 for w in T[i:i + n])
+            and ((i > 0 and len(T[i - 1]) == 1) or (i + n < len(T) and len(T[i + n]) == 1)))
 
 
 def extract(title, terms, blocked):
@@ -143,14 +193,10 @@ def extract(title, terms, blocked):
     while i < len(T):
         m = None
         for n in (4, 3, 2, 1):
-            if i + n <= len(T):
-                p = " ".join(T[i:i + n]).strip("'")
-                if p in terms:
+            if i + n <= len(T) and not _inside_initials(T, i, n):
+                p = next((s for s in _spellings(T[i:i + n]) if s in terms), None)
+                if p:
                     m = (p, n)
-                    break
-                dp = " ".join(depossess(w) for w in T[i:i + n]).strip("'")
-                if dp != p and dp in terms:
-                    m = (dp, n)
                     break
         if m:
             term = m[0]
@@ -171,7 +217,7 @@ def _segs(name):
     # the term list still spells NYC two ways; the dataset uses "New York, New York"
     name = name.replace("New York City, New York", "New York, New York")
     name = name.replace(", New York City", ", New York, New York")
-    return [x.strip().lower() for x in name.split(",") if x.strip()]
+    return [ascii_(x).strip().lower() for x in name.split(",") if x.strip()]
 
 
 def _within(short, chain):
@@ -234,7 +280,7 @@ def dataset_terms(rows, terms):
     extra = {}
     for r in rows:
         first = r["place"].split(",")[0]
-        k = norm(first).strip("'")
+        k = term_key(first)
         if k and k not in terms and k not in extra and k not in DERIVED_SKIP:
             extra[k] = {"place": r["place"], "category": r["place_category"], "mention": "Direct"}
     return extra

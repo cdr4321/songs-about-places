@@ -132,6 +132,17 @@ The US workflow takes **weeks_back** instead.
 The matcher has a real false-positive rate: it cannot tell Ms. Jackson from
 Jackson, Mississippi. Nothing new goes live without a `y`.
 
+How titles are matched: the matcher looks for the names in `place_terms.json`
+plus the first part of every place already in the dataset. The term list
+includes former names (Calcutta, Saigon, Leningrad), nicknames (St. Louie,
+Big D, San Antone) and spellings songs use (North Caroline, Virginny,
+Tennesee), each pointing at today's place. Titles are read without accents or
+punctuation, so "São Paulo", "Sao Paulo" and "Wilkes-Barre" all match, and
+abbreviations are spelled out: "Carnaby St." is Carnaby Street, "Mt. Vernon"
+is Mount Vernon, "Saint Louis" is St. Louis. Names left out on purpose,
+because they are mostly ordinary words or point to more than one place:
+Louie, Bama, NOLA, Canton, Crescent City.
+
 ## The Rock Hall scan
 
 `review/rock_hall_candidates.csv` holds place-songs from the studio albums,
