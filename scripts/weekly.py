@@ -51,6 +51,8 @@ def places_in(title, terms, blocked, chart, places):
                 i += 2
                 continue
         chain, lat, lon, note = resolve(info["place"], info["category"], chart, places)
+        if info.get("ask"):   # a name that could be several places: the reviewer picks
+            chain, lat, lon, note = None, "", "", info["ask"]
         out.append(dict(term=hits[i], short=info["place"], chain=chain, lat=lat, lon=lon,
                         note=note, category=info["category"], mention=info["mention"]))
         i += 1
@@ -108,8 +110,8 @@ def process(chart, entries):
             nested = f["chain"] in outer
             note = f["note"]
             if not f["chain"]:
-                note = ("NEW PLACE — write the full chain (City, State, Country, Continent) "
-                        "in place and fill latitude/longitude")
+                note = note or ("NEW PLACE — write the full chain (City, State, Country, Continent) "
+                                "in place and fill latitude/longitude")
             elif nested:
                 note = ("contains another place in this title — pre-marked n; set y only if "
                         "both places are the point of the title")

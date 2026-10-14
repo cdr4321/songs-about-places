@@ -122,6 +122,10 @@ The US workflow takes **weeks_back** instead.
      "City, State" title, pre-marked `n`.
    - **UK chart but a little-used US place** or **matched on the bare name**:
      make sure it's the right town (Margate, Kent vs Margate, Florida).
+   - **a bare 'Washington'**: the matcher doesn't guess between the state and
+     D.C. Write the full chain, check `place_category`, and fill in the
+     coordinates, or set `n`. ("Washington, D.C." and "D.C." go straight to
+     D.C.; "Seattle, Washington" to Seattle.)
 4. Check `year`. It defaults to the chart year; change it to the release year
    if they differ.
 5. Commit. *Apply approved candidates* runs automatically: `y` rows go into
@@ -131,6 +135,17 @@ The US workflow takes **weeks_back** instead.
 
 The matcher has a real false-positive rate: it cannot tell Ms. Jackson from
 Jackson, Mississippi. Nothing new goes live without a `y`.
+
+How titles are matched: the matcher looks for the names in `place_terms.json`
+plus the first part of every place already in the dataset. The term list
+includes former names (Calcutta, Saigon, Leningrad), nicknames (St. Louie,
+Big D, San Antone) and spellings songs use (North Caroline, Virginny,
+Tennesee), each pointing at today's place. Titles are read without accents or
+punctuation, so "São Paulo", "Sao Paulo" and "Wilkes-Barre" all match, and
+abbreviations are spelled out: "Carnaby St." is Carnaby Street, "Mt. Vernon"
+is Mount Vernon, "Saint Louis" is St. Louis. Names left out on purpose,
+because they are mostly ordinary words or point to more than one place:
+Louie, Bama, NOLA, Canton, Crescent City.
 
 ## The Rock Hall scan
 
