@@ -201,7 +201,7 @@ def main():
                 continue
             notes = [x for x in (s["side_note"], f["note"]) if x]
             nested = f["chain"] in outer
-            if not f["chain"]:
+            if not f["chain"] and not f["note"]:
                 notes.append("NEW PLACE — write the full chain (City, State, Country, Continent) "
                              "in place and fill latitude/longitude")
             elif nested:

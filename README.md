@@ -122,6 +122,10 @@ The US workflow takes **weeks_back** instead.
      "City, State" title, pre-marked `n`.
    - **UK chart but a little-used US place** or **matched on the bare name**:
      make sure it's the right town (Margate, Kent vs Margate, Florida).
+   - **a bare 'Washington'**: the matcher doesn't guess between the state and
+     D.C. Write the full chain, check `place_category`, and fill in the
+     coordinates, or set `n`. ("Washington, D.C." and "D.C." go straight to
+     D.C.; "Seattle, Washington" to Seattle.)
 4. Check `year`. It defaults to the chart year; change it to the release year
    if they differ.
 5. Commit. *Apply approved candidates* runs automatically: `y` rows go into
