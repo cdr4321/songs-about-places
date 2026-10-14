@@ -38,7 +38,7 @@ validator will reject the file.
 
 | column | what goes in it |
 |---|---|
-| `year` | release year (chart-debut year if unknown) |
+| `year` | release year (chart-debut year if unknown); if the artist had been dead for some years when it first came out (a vault or archival release), the year it was recorded |
 | `title`, `artist` | as credited; featured artists written `ft.` |
 | `place` | full chain ending in the continent: `Memphis, Tennessee, United States, North America`. Plain letters only, no accents |
 | `place_category` | City, Country, State/Region, Continent/Region, Street/Landmark, Neighborhood/District, Water/Natural Feature |
@@ -153,8 +153,11 @@ EPs and singles of every inductee, taken from MusicBrainz:
    row (`y`, `n — why`, or `? — what to check`); nothing is approved until
    `approved` says so. The other extra columns (`inductee`, `release`,
    `release_type`, `credited_as`, `musicbrainz`) show where each song came
-   from. `year` is the earliest release of that title by that act; rows
-   without one are held back until it's filled in. A rejected row goes to
+   from. `year` is the earliest release of that title by that act (or the
+   recording year, for a vault release long after the artist's death); rows
+   without one are held back until it's filled in. MusicBrainz's earliest
+   date is sometimes a later budget reissue, so check old songs with recent
+   years. A rejected row goes to
    `review/rock_hall/rejected.csv` rather than the weekly checks' block list.
 
 Re-running the scan or `rock_hall_candidates.py` keeps what's already in the
