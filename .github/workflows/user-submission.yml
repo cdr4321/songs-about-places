@@ -1,0 +1,57 @@
+name: Queue user submission
+
+# The map's suggestion form opens an issue labelled user-submission (relayed by
+# worker/submit-song.js). This adds the song to review/user_candidates.csv, the
+# way the weekly checks queue chart songs, and comments on the issue.
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: data-writes          # never run alongside the weekly checks or an apply
+  cancel-in-progress: false
+
+jobs:
+  queue:
+    # Only the relay's own issues. It opens them with the repo owner's token and the
+    # label; GitHub drops labels that people without write access try to set.
+    if: >-
+      contains(github.event.issue.labels.*.name, 'user-submission') &&
+      github.event.issue.user.login == github.repository_owner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Add the song to the review queue
+        env:
+          # read by the script as data; never interpolated into a shell command
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          COMMENT_FILE: ${{ runner.temp }}/comment.md
+        run: python scripts/add_user_submission.py
+
+      - name: Commit the queue
+        run: |
+          git config user.name "songs-about-places bot"
+          git config user.email "actions@github.com"
+          git add review/user_candidates.csv
+          if git diff --staged --quiet; then
+            echo "Nothing changed."
+          else
+            git commit -m "Queue user submission (#${{ github.event.issue.number }})"
+            git pull --rebase
+            git push
+          fi
+
+      - name: Comment on the issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue comment "${{ github.event.issue.number }}" --body-file "${{ runner.temp }}/comment.md"

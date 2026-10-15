@@ -1,0 +1,21 @@
+# Optional: only needed if you deploy with the wrangler command line
+# (`npx wrangler deploy` from this folder) instead of pasting the code into
+# the Cloudflare dashboard. Setup steps are in README.md.
+name = "songs-about-places-submit"
+main = "submit-song.js"
+compatibility_date = "2025-10-01"
+
+[vars]
+GITHUB_REPO = "cdr4321/songs-about-places"
+ALLOWED_ORIGINS = "https://cdr4321.github.io,https://www.chrisdallariva.com"
+
+# At most 3 submissions a minute from one visitor. Cloudflare counts this per
+# data centre and approximately, so it blunts floods rather than guaranteeing a cap.
+# Needs wrangler 4.36 or newer.
+[[ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1001"
+
+  [ratelimits.simple]
+  limit = 3
+  period = 60

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Move approved rows from review/us_candidates.csv, review/uk_candidates.csv
-and review/rock_hall_candidates.csv into data/songs.csv.
+Move approved rows from review/us_candidates.csv, review/uk_candidates.csv,
+review/rock_hall_candidates.csv and review/user_candidates.csv (reader
+suggestions) into data/songs.csv.
 
   approved = y   -> added to data/songs.csv and removed from the queue
   approved = n   -> removed from the queue, and the term/title pair is added
@@ -15,7 +16,9 @@ list columns and chart stats so every place row of a song agrees.
 
 Any song added whose artist credit names a Rock & Roll Hall of Fame inductee
 (review/rock_hall/inductees.csv) gets rock_hall_inductee = Y, whichever queue
-it came from.
+it came from. A song added from the user queue gets user_submission = y (a song
+already in the dataset under another place keeps the flags its rows already have,
+so every place row of a song agrees).
 
 Runs automatically when a queue file is committed (see
 .github/workflows/apply-approved.yml); it can also be run by hand.
@@ -36,7 +39,7 @@ def main():
     added, removed, held, rejected, rh_rejected = [], 0, [], [], []
     inductees = Inductees()
 
-    for chart in ("us", "uk", "rock_hall"):
+    for chart in ("us", "uk", "rock_hall", "user"):
         queue = load_queue(chart)
         keep = []
         for q in queue:
@@ -77,6 +80,8 @@ def main():
                 new.update(year=same[0]["year"], title=same[0]["title"], artist=same[0]["artist"])
             else:
                 new.update(year=q["year"].strip(), title=q["title"].strip(), artist=q["artist"].strip())
+            if chart == "user" and not same and "user_submission" in cols:
+                new["user_submission"] = "y"
             col = CHART_COL.get(q.get("chart") or chart)
             if col and better_peak(new[col], q["weekly_peak"].strip()):
                 new[col] = q["weekly_peak"].strip()

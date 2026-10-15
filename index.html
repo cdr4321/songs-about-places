@@ -159,13 +159,51 @@
   .empty{padding:24px 22px;color:var(--mute);font-size:13px}
   .foot{margin-top:22px;padding-top:16px;border-top:1px solid var(--rule)}
   .foot p{margin:0 0 9px;font-size:12.5px;color:var(--mute);line-height:1.45}
-  .foot a.contact{
+  .foot .contact{
     display:inline-block;font:500 11px/1 "Barlow Condensed",sans-serif;
-    letter-spacing:.11em;text-transform:uppercase;text-decoration:none;
+    letter-spacing:.11em;text-transform:uppercase;text-decoration:none;cursor:pointer;
     padding:8px 12px;border:1px solid rgba(233,162,59,.42);border-radius:3px;
-    color:var(--dial);transition:.15s
+    background:transparent;color:var(--dial);transition:.15s
   }
-  .foot a.contact:hover{background:var(--dial);color:#14130F;border-color:var(--dial)}
+  .foot .contact:hover{background:var(--dial);color:#14130F;border-color:var(--dial)}
+  /* ---------- suggestion dialog ---------- */
+  #suggest{
+    width:min(94vw,460px);max-height:calc(100dvh - 24px);overflow-y:auto;margin:auto;padding:22px 24px 20px;
+    background:var(--panel);color:var(--ink);border:1px solid rgba(233,162,59,.35);border-radius:4px;
+    box-shadow:0 18px 60px rgba(0,0,0,.65)
+  }
+  #suggest::backdrop{background:rgba(5,12,14,.72)}
+  #suggest h2{font:600 22px/1.1 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.03em;margin:0 30px 6px 0}
+  #suggest h2:focus{outline:none}
+  #suggest p{margin:0 0 14px;font-size:13px;line-height:1.45;color:var(--mute)}
+  #sgx{
+    position:absolute;top:12px;right:12px;width:30px;height:30px;padding:0;border-radius:50%;
+    background:transparent;border:1px solid var(--rule);color:var(--mute);font-size:18px;line-height:1;cursor:pointer
+  }
+  #sgx:hover{border-color:var(--dial);color:var(--dial)}
+  .sg-f{display:block;margin:0 0 13px}
+  .sg-l{display:block;margin-bottom:6px;font:500 11px/1.2 "Barlow Condensed",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--foam)}
+  .sg-l i{font-style:normal;letter-spacing:.06em;color:var(--mute);text-transform:none;font-family:"Spline Sans",sans-serif;font-size:11px}
+  #suggest input,#suggest select,#suggest textarea{
+    width:100%;padding:9px 11px;background:var(--night-2);border:1px solid var(--rule);border-radius:2px;
+    color:var(--ink);font:16px/1.4 "Spline Sans",sans-serif
+  }
+  #suggest textarea{min-height:84px;resize:vertical}
+  #suggest select{appearance:auto}
+  #suggest input[aria-invalid="true"],#suggest select[aria-invalid="true"]{border-color:#E0795B}
+  #suggest .sg-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+  #sgerr{min-height:0;margin:0 0 10px;font-size:13px;color:#F0A58C}
+  #sgerr:empty{display:none}
+  #suggest .sg-public{margin:2px 0 14px;font-size:12px;color:var(--mute)}
+  #sgsend,.sg-btn{
+    font:500 12px/1 "Barlow Condensed",sans-serif;letter-spacing:.11em;text-transform:uppercase;cursor:pointer;
+    padding:11px 16px;border-radius:3px;border:1px solid var(--dial);background:var(--dial);color:#14130F
+  }
+  #sgsend[disabled]{opacity:.6;cursor:default}
+  .sg-btn.alt{background:transparent;color:var(--dial);border-color:rgba(233,162,59,.42)}
+  .sg-actions{display:flex;gap:10px;flex-wrap:wrap}
+  #suggest .sg-alt{margin:16px 0 0;padding-top:13px;border-top:1px solid var(--rule);font-size:12.5px}
+  #suggest .sg-alt a{color:var(--dial)}
   /* ---------- map ---------- */
   #map{height:100%;background:var(--night)}
   .leaflet-container{background:var(--night);font-family:"Spline Sans",sans-serif}
@@ -174,7 +212,10 @@
   .dot:hover,.dot.on{background:var(--dial);box-shadow:0 0 0 7px rgba(233,162,59,.22)}
   .leaflet-tooltip.tip{
     background:var(--panel);border:1px solid var(--rule);color:var(--ink);
-    border-radius:3px;padding:9px 11px;box-shadow:0 6px 22px rgba(0,0,0,.5);max-width:270px
+    border-radius:3px;padding:9px 11px;box-shadow:0 6px 22px rgba(0,0,0,.5);
+    /* Leaflet sets white-space:nowrap on tooltips, which let long titles run out of the
+       bubble; wrap instead, and break a very long unspaced word rather than overflow */
+    white-space:normal;width:max-content;max-width:300px;overflow-wrap:anywhere
   }
   .leaflet-tooltip.tip:before{display:none}
   .tip .tp{font:600 14px/1.15 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.04em}
@@ -398,8 +439,7 @@
       <div class="foot">
         <p>Why was a particular song included? Tap the <span class="qmark" aria-hidden="true">?</span> beside the title to see why we consider it notable.</p>
         <p>Something incorrect or missing? Let me know.</p>
-        <a class="contact" href="https://www.chrisdallariva.com/contact"
-           target="_blank" rel="noopener">Get in touch</a>
+        <button type="button" class="contact" id="suggestbtn" aria-haspopup="dialog">Get in touch</button>
       </div>
     </div>
 
@@ -416,6 +456,47 @@
   </aside>
   <main><div id="map"></div></main>
   <div id="whybox" role="tooltip" hidden></div>
+  <dialog id="suggest" aria-labelledby="sgtitle">
+    <button type="button" id="sgx" aria-label="Close">&#215;</button>
+    <div id="sgform-view">
+      <h2 id="sgtitle" tabindex="-1" autofocus>Suggest a song</h2>
+      <p>Know a song that names a place and belongs on the map? Tell me about it.</p>
+      <form id="sgform" novalidate>
+        <label class="sg-f"><span class="sg-l">Title</span>
+          <input name="title" type="text" maxlength="200" autocomplete="off" required></label>
+        <label class="sg-f"><span class="sg-l">Artist</span>
+          <input name="artist" type="text" maxlength="200" autocomplete="off" required></label>
+        <label class="sg-f"><span class="sg-l">Kind of place</span>
+          <select name="kind" required>
+            <option value="" selected disabled>Choose one…</option>
+            <option value="City">City</option>
+            <option value="Country">Country</option>
+            <option value="State/Region">State or region</option>
+            <option value="Continent/Region">Continent or region</option>
+            <option value="Street/Landmark">Street or landmark</option>
+            <option value="Neighborhood/District">Neighborhood or district</option>
+            <option value="Water/Natural Feature">Water or natural feature</option>
+          </select></label>
+        <label class="sg-f"><span class="sg-l">Release year <i>(optional)</i></span>
+          <input name="year" type="text" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" autocomplete="off"></label>
+        <label class="sg-f"><span class="sg-l">Anything else I should know about this song? <i>(optional)</i></span>
+          <textarea name="notes" maxlength="1500"></textarea></label>
+        <div class="sg-hp" aria-hidden="true"><label>Website <input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
+        <p class="sg-public">Your suggestion, including anything you write here, will be posted publicly on GitHub.</p>
+        <p id="sgerr" role="alert"></p>
+        <div class="sg-actions"><button type="submit" id="sgsend">Submit</button></div>
+      </form>
+    </div>
+    <div id="sgdone-view" hidden>
+      <h2 tabindex="-1" id="sgdone">Thank you</h2>
+      <p>Your suggestion is in. I’ll review it and add it to the map if it fits.</p>
+      <div class="sg-actions">
+        <button type="button" class="sg-btn" id="sgclose2">Close</button>
+        <button type="button" class="sg-btn alt" id="sgagain">Suggest another</button>
+      </div>
+    </div>
+    <p class="sg-alt">Have a different issue? <a href="https://www.chrisdallariva.com/contact" target="_blank" rel="noopener">Click here</a> to send me a message.</p>
+  </dialog>
   <pre id="dbg" hidden></pre>
 </div>
 
@@ -632,7 +713,7 @@ function draw(){
     const m=L.marker([p.lat,p.lon],{n:p.f.length,
       icon:L.divIcon({html:'<div class="dot" style="width:'+d+'px;height:'+d+'px"></div>',
         className:'',iconSize:[d,d],iconAnchor:[d/2,d/2]})});
-    const top=p.f.slice(0,4).map(s=>esc(s.t)+' <span style="color:#7D9A9B">'+s.y+'</span>').join('<br>');
+    const top=p.f.slice(0,4).map(s=>esc(s.t)+' <span class="nowrap" style="color:#7D9A9B">'+s.y+'</span>').join('<br>');
     if(!touch) m.bindTooltip('<div class="tp">'+esc(short(p.p))+'</div><div class="tc">'+p.c+' · '+p.f.length+
       (p.f.length===1?' song':' songs')+'</div><div class="tl">'+top+'</div>'+
       (p.f.length>4?'<div class="tm">+'+(p.f.length-4)+' more — click to see all</div>':''),
@@ -1085,6 +1166,70 @@ function build(rows,aliasRows){
   out.forEach(p=>p.s.sort((a,b)=>b.y-a.y||a.t.localeCompare(b.t)));   // newest first
   return out.sort((a,b)=>b.s.length-a.s.length);
 }
+// ---------- reader suggestions ----------
+// Where the suggestion form posts: the Cloudflare Worker in worker/ (setup in worker/README.md).
+// Until that is set, the "Get in touch" button simply opens the contact page.
+const SUBMIT_URL='';
+const CONTACT_URL='https://www.chrisdallariva.com/contact';
+(()=>{
+  const dlg=document.getElementById('suggest'), form=document.getElementById('sgform'),
+    err=document.getElementById('sgerr'), send=document.getElementById('sgsend'),
+    formView=document.getElementById('sgform-view'), doneView=document.getElementById('sgdone-view'),
+    el=n=>form.elements[n];
+  const view=done=>{ formView.hidden=done; doneView.hidden=!done; };
+  const open=()=>{
+    if(!SUBMIT_URL){ window.open(CONTACT_URL,'_blank','noopener'); return; }
+    err.textContent=''; view(false); dlg.showModal();
+  };
+  document.getElementById('suggestbtn').addEventListener('click',open);
+  const close=()=>dlg.close();
+  document.getElementById('sgx').addEventListener('click',close);
+  document.getElementById('sgclose2').addEventListener('click',close);
+  document.getElementById('sgagain').addEventListener('click',()=>{
+    err.textContent=''; view(false); document.getElementById('sgtitle').focus();
+  });
+  // a click on the dimmed backdrop closes it; a click anywhere on the dialog itself does not
+  dlg.addEventListener('click',e=>{
+    const r=dlg.getBoundingClientRect();
+    if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom) close();
+  });
+  // Escape closes the dialog on its own; keep it from also closing the drawer and song list behind it
+  dlg.addEventListener('keydown',e=>{ if(e.key==='Escape') e.stopPropagation(); });
+
+  const problem=()=>{
+    const v=n=>el(n).value.trim();
+    if(!v('title')) return ['title','Please enter the song title.'];
+    if(!v('artist')) return ['artist','Please enter the artist.'];
+    if(!v('kind')) return ['kind','Please choose a kind of place.'];
+    const y=v('year');
+    if(y&&!(/^\d{4}$/.test(y)&&+y>=1800&&+y<=2100)) return ['year','Please enter the release year as four digits, or leave it blank.'];
+    return null;
+  };
+  // fixing a field clears its complaint
+  form.addEventListener('input',e=>{ e.target.removeAttribute('aria-invalid'); err.textContent=''; });
+  form.addEventListener('submit',async e=>{
+    e.preventDefault();
+    for(const n of ['title','artist','kind','year']) el(n).removeAttribute('aria-invalid');
+    const bad=problem();
+    if(bad){ el(bad[0]).setAttribute('aria-invalid','true'); err.textContent=bad[1]; el(bad[0]).focus(); return; }
+    err.textContent='';
+    send.disabled=true; send.textContent='Sending…';
+    const body={website:el('website').value};
+    for(const n of ['title','artist','kind','year','notes']) body[n]=el(n).value.trim();
+    let msg='';
+    try{
+      const r=await fetch(SUBMIT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      if(r.ok){
+        form.reset(); view(true); document.getElementById('sgdone').focus();
+        send.disabled=false; send.textContent='Submit';
+        return;
+      }
+      try{ msg=(await r.json()).error||''; }catch(_){}
+    }catch(_){}
+    err.textContent=msg||'Couldn’t send that just now. Please try again, or use the link below to message me.';
+    send.disabled=false; send.textContent='Submit';
+  });
+})();
 const getText=u=>fetch(u,{cache:'no-cache'}).then(r=>{if(!r.ok) throw new Error(u+' '+r.status); return r.text();});
 Promise.all([getText('data/songs.csv'),getText('data/place_aliases.csv').catch(()=>'place,aliases\n')])
  .then(([songs,aliases])=>{

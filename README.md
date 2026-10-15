@@ -17,11 +17,14 @@ data/place_aliases.csv              extra search words for a place ("usa", "wind
 review/us_candidates.csv            US review queue (written by the weekly check)
 review/uk_candidates.csv            UK review queue (written by the weekly check)
 review/rock_hall_candidates.csv     Rock Hall review queue (inductees' album and single tracks)
+review/user_candidates.csv          reader suggestions waiting for review (written by the Queue user submission workflow)
 review/rock_hall/                   Rock Hall inductee list and the MusicBrainz scan behind that queue
 scripts/find_new_place_songs.py     weekly US Hot 100 check
 scripts/find_new_uk_place_songs.py  weekly UK Singles Chart check
 scripts/weekly.py                   the part of the check both charts share
 scripts/apply_approved.py           moves approved queue rows into data/songs.csv
+scripts/add_user_submission.py      turns a reader's suggestion issue into a row in review/user_candidates.csv
+worker/                             the Cloudflare Worker behind the map's suggestion form (setup in worker/README.md)
 scripts/validate_data.py            checks data/songs.csv before the site uses it
 scripts/common.py                   matching and CSV helpers
 scripts/place_terms.json            place names the matcher looks for, and blocked title/term pairs
@@ -146,6 +149,32 @@ abbreviations are spelled out: "Carnaby St." is Carnaby Street, "Mt. Vernon"
 is Mount Vernon, "Saint Louis" is St. Louis. Names left out on purpose,
 because they are mostly ordinary words or point to more than one place:
 Louie, Bama, NOLA, Canton, Crescent City.
+
+## Reader suggestions
+
+The **Get in touch** button on the map opens a short form: title, artist and
+kind of place (required), plus an optional release year and an optional note.
+It asks for no email, and says on the form that the suggestion is posted
+publicly on GitHub. Submitting it:
+
+1. posts to a small Cloudflare Worker (`worker/`, which holds the GitHub
+   token the static page can't),
+2. which opens an issue labelled `user-submission`,
+3. which the *Queue user submission* workflow
+   (`.github/workflows/user-submission.yml`) turns into a row in
+   `review/user_candidates.csv`, with a comment on the issue. It flags a song
+   that's already in `data/songs.csv` or already queued.
+
+Review it like any other queue: write the full place chain in `place`, fill in
+`latitude` and `longitude`, check `year` (blank if the reader left it out;
+a row without a year is held back), then put `y` in `approved` (or `n`) and
+commit. *Apply approved candidates* adds the song with `user_submission` set
+to `y`. The reader's note stays in the issue; nothing from the form but the
+song itself reaches a CSV. Close the issue yourself when you've decided.
+The `submission` column links each row to its issue.
+
+If `SUBMIT_URL` in `index.html` is empty, the button just opens the contact
+page instead.
 
 ## The Rock Hall scan
 
