@@ -35,14 +35,22 @@ token**.
 
 Copy the token when GitHub shows it. You can't see it again.
 
-**3. Create the Worker.** Cloudflare dashboard, **Workers & Pages**, **Create**,
-**Create Worker**. Name it `songs-about-places-submit` and deploy the starter
-code, then **Edit code**, replace everything with the contents of
-`worker/submit-song.js`, and **Deploy**.
+**3. Create the Worker from this repo.** Cloudflare dashboard, **Workers & Pages**,
+**Create**, then connect the GitHub repo `cdr4321/songs-about-places`. Settings:
+- Project name: `songs-about-places-submit` (it must match `name` in `wrangler.toml`,
+  or the build fails)
+- Build command: leave empty. Deploy command: `npx wrangler deploy`
+- **Root directory / Path: `worker`** (not `/`; the Worker lives in this folder)
+- Production branch: `main`. Preview builds: off.
 
-**4. Add the token as a secret.** In the Worker, **Settings**, **Variables and
-Secrets**, **Add**, type **Secret**, name `GITHUB_TOKEN`, value the token from
-step 2. Deploy again if it asks.
+Cloudflare then redeploys the Worker whenever `main` changes, so merging a change
+to `worker/submit-song.js` is all it takes to update it.
+
+**4. Add the token as a runtime secret.** In the Worker, **Settings**, then
+**Variables and secrets** (the *Runtime* one, not the one under *Builds*, which is
+only visible while building), **Add variable**, type **Secret**, name
+`GITHUB_TOKEN`, value the token from step 2. Without it the form says "The form
+isn't set up yet."
 
 **5. Point the map at it.** Copy the Worker's address (it looks like
 `https://songs-about-places-submit.<your-name>.workers.dev`) and paste it
@@ -60,21 +68,11 @@ Commit that. Until it's set, the button just opens your contact page.
 row in `review/user_candidates.csv`. Then close the issue and delete the test
 row (or put `n` in `approved` and commit).
 
-## Optional: rate limiting
+## Rate limiting
 
-The code limits each visitor to 3 submissions a minute **if** a rate-limit
-binding named `RATE_LIMITER` exists. `wrangler.toml` here defines one, so
-deploying from the command line gets it:
-
-```
-cd worker
-npx wrangler deploy
-npx wrangler secret put GITHUB_TOKEN
-```
-
-You can instead add the same binding by hand in the dashboard (Worker,
-**Settings**, **Bindings**). Without it the Worker still works; the other
-protections still apply.
+`wrangler.toml` defines a `RATE_LIMITER` binding (3 submissions a minute per
+visitor), which Cloudflare creates when it deploys from the repo. Without the
+binding the Worker still works; the other protections still apply.
 
 ## What protects it
 
@@ -109,5 +107,7 @@ Cloudflare's **Logs** tab for the Worker will show GitHub's reason.
 
 The fields live in three places that have to agree: the form in `index.html`,
 `validate()` and `issueBody()` in `submit-song.js`, and `HEADINGS` in
-`scripts/add_user_submission.py`. The kinds of place must match `CATEGORIES`
-in `scripts/common.py`.
+`scripts/add_user_submission.py` (the order matters). The kinds of place must
+match `CATEGORIES` in `scripts/common.py`. A change to the form and to the
+Worker go live at slightly different moments, so a submission in that minute
+can be rejected; it just needs resending.

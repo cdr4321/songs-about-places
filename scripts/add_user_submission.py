@@ -11,6 +11,11 @@ comment for the issue.
 Only the song itself goes into the queue. The reader's free-text note stays in
 the issue and never reaches a CSV in the repo.
 
+The place the reader typed is matched against the dataset (place_match.py): a
+place already on the map gets its full name, latitude, longitude and category
+filled in, and the title is read to guess the mention type. Everything filled
+in is described in the row's note, and the reviewer still has to approve it.
+
 Reads, from the environment:
   ISSUE_BODY      the issue's body text
   ISSUE_NUMBER    the issue number
@@ -23,9 +28,10 @@ here, never run or interpolated into a shell command.
 import datetime, os, re, sys
 from common import (CATEGORIES, SongIndex, gh_output, load_queue, load_songs, same_artist,
                     save_queue, squash)
+from place_match import Matcher, one_line
 
 # in the order the relay writes them; the heading text is the contract with worker/submit-song.js
-HEADINGS = [("title", "Song title"), ("artist", "Artist"), ("kind", "Kind of place"),
+HEADINGS = [("title", "Song title"), ("artist", "Artist"), ("place", "Place"), ("kind", "Kind of place"),
             ("year", "Release year"),
             ("notes", "Anything else I should know about this song?")]
 FOOTER = "\n---\n_Submitted through the form on the map._"
@@ -56,10 +62,6 @@ def parse(body):
         # the relay writes "@" as an entity so a submission can't @-mention anyone
         out[k] = "" if v == NO_RESPONSE else v.replace("&#64;", "@")
     return out
-
-
-def one_line(s):
-    return re.sub(r"\s+", " ", s).strip()
 
 
 def main():
@@ -100,26 +102,68 @@ def main():
     if any(squash(q["title"]) == squash(title) and same_artist(q["artist"], artist) for q in queue):
         problems.append("already waiting in review/user_candidates.csv")
 
-    note = (f"USER SUBMISSION (#{number}); write the full place chain in place, fill latitude and "
-            "longitude, check the year. Any note from the reader is in the issue.")
+    # the place: match what the reader typed against the dataset
+    typed = one_line(fields["place"])
+    typed_safe = typed.lstrip("=+@- ")[:120]
+    if not typed_safe:
+        problems.append("the place was blank")
+    matcher = Matcher(rows)
+    match = matcher.match(typed_safe, kind)
+    mention, why = matcher.mention(title, match)
+
+    if match.chain and any(r["place"] == match.chain for r in dups):
+        problems.append("this song is already on the map at this place; set approved to n")
+
+    notes = [f"USER SUBMISSION (#{number}). Reader wrote place: '{typed_safe}'."]
+    if match.status == "matched":
+        notes.append(f"Place, latitude, longitude and category pre-filled from {match.via}; "
+                     "confirm it's the right one.")
+    elif match.status == "ambiguous":
+        notes.append("AMBIGUOUS PLACE, not pre-filled; could be: " + " | ".join(match.candidates)
+                     + ". Write the right full chain in place and copy its latitude/longitude.")
+    elif match.status == "mismatch":
+        notes.append("PLACE NOT PRE-FILLED: " + "; ".join(match.notes) + ". Dataset has: "
+                     + " | ".join(match.candidates) + ". Write the full chain and check the coordinates.")
+    else:
+        notes.append("NEW PLACE: not in the dataset. Write the full chain (City, State, Country, "
+                     "Continent) in place and fill latitude/longitude.")
+    if mention:
+        notes.append(f"Mention type '{mention}' guessed: {why}.")
+    else:
+        notes.append(f"Mention type left blank ({why}); it becomes Direct when approved unless you set it.")
+    notes.append("Check the year" + ("" if year else " (the reader left it blank; fill it in)")
+                 + ". Any note from the reader is in the issue.")
     if problems:
-        note += " Check: " + "; ".join(problems) + "."
+        notes.append("Check: " + "; ".join(problems) + ".")
     queue.append({"chart": "user", "chart_week": datetime.date.today().isoformat(), "year": year,
-                  "title": title, "artist": artist, "weekly_peak": "", "place": "",
-                  "place_category": kind, "mention_type": "", "matched_text": "",
-                  "latitude": "", "longitude": "", "note": note, "approved": "",
-                  "submission": url})
+                  "title": title, "artist": artist, "weekly_peak": "",
+                  "place": match.chain or typed_safe,
+                  "place_category": match.category or kind, "mention_type": mention,
+                  "matched_text": "", "latitude": match.lat, "longitude": match.lon,
+                  "note": " ".join(notes), "approved": "", "submission": url})
     save_queue("user", queue)
     print(f"queued '{title}' by {artist} from issue #{number}; "
           f"review/user_candidates.csv now holds {len(queue)} row(s)")
 
     lines = ["Queued in `review/user_candidates.csv` for review.", ""]
+    if match.status == "matched":
+        lines.append(f"- **Place:** pre-filled as {match.chain} ({match.lat}, {match.lon}), "
+                     f"from {match.via}.")
+    elif match.status in ("ambiguous", "mismatch"):
+        lines.append("- **Place:** not pre-filled; it could be " + " or ".join(match.candidates)
+                     + (f" ({'; '.join(match.notes)})" if match.notes else "") + ".")
+    else:
+        lines.append(f"- **Place:** '{typed_safe}' isn't in the dataset yet. Write the full chain "
+                     "and fill latitude/longitude.")
+    lines.append(f"- **Mention type:** {mention} ({why})." if mention
+                 else f"- **Mention type:** not guessed ({why}).")
+    lines.append("")
     if problems:
         lines += ["**Check:**"] + [f"- {p}" for p in problems] + [""]
-    lines += ["**To publish:** open the file, write the full place chain in `place`, fill "
-              "`latitude` and `longitude`, check `year`, put `y` in `approved` (or `n` to drop "
-              "it) and commit. *Apply approved candidates* then adds the song, flagged as a user "
-              "submission."]
+    lines += ["**To publish:** open the file, check what's filled in" +
+              (" and complete `place`, `latitude` and `longitude`" if match.status != "matched" else "") +
+              ", check `year`, put `y` in `approved` (or `n` to drop it) and commit. *Apply "
+              "approved candidates* then adds the song, flagged as a user submission."]
     path = os.environ.get("COMMENT_FILE")
     if path:
         with open(path, "w", encoding="utf-8") as fh:

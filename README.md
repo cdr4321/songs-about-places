@@ -24,6 +24,7 @@ scripts/find_new_uk_place_songs.py  weekly UK Singles Chart check
 scripts/weekly.py                   the part of the check both charts share
 scripts/apply_approved.py           moves approved queue rows into data/songs.csv
 scripts/add_user_submission.py      turns a reader's suggestion issue into a row in review/user_candidates.csv
+scripts/place_match.py              matches a suggestion's place against the dataset and guesses its mention type
 worker/                             the Cloudflare Worker behind the map's suggestion form (setup in worker/README.md)
 scripts/validate_data.py            checks data/songs.csv before the site uses it
 scripts/common.py                   matching and CSV helpers
@@ -152,8 +153,8 @@ Louie, Bama, NOLA, Canton, Crescent City.
 
 ## Reader suggestions
 
-The **Get in touch** button on the map opens a short form: title, artist and
-kind of place (required), plus an optional release year and an optional note.
+The **Submit a Song** button on the map opens a short form: title, artist, place
+and kind of place (required), plus an optional release year and an optional note.
 It asks for no email, and says on the form that the suggestion is posted
 publicly on GitHub. Submitting it:
 
@@ -162,16 +163,37 @@ publicly on GitHub. Submitting it:
 2. which opens an issue labelled `user-submission`,
 3. which the *Queue user submission* workflow
    (`.github/workflows/user-submission.yml`) turns into a row in
-   `review/user_candidates.csv`, with a comment on the issue. It flags a song
-   that's already in `data/songs.csv` or already queued.
+   `review/user_candidates.csv`, with a comment on the issue.
 
-Review it like any other queue: write the full place chain in `place`, fill in
-`latitude` and `longitude`, check `year` (blank if the reader left it out;
-a row without a year is held back), then put `y` in `approved` (or `n`) and
-commit. *Apply approved candidates* adds the song with `user_submission` set
-to `y`. The reader's note stays in the issue; nothing from the form but the
-song itself reaches a CSV. Close the issue yourself when you've decided.
-The `submission` column links each row to its issue.
+`scripts/place_match.py` pre-fills the row from what the dataset already knows:
+
+- **A place already on the map** ("Los Angeles", "Memphis, TN", "LA", "NYC",
+  "Windy City") gets its full `place` chain, `latitude`, `longitude` and
+  `place_category` copied from `data/songs.csv`. A trailing state or province
+  (and its usual abbreviation) is understood, and the reader's kind of place
+  separates places that share a name (New York the city or the state).
+- **A name that could be several places** (Paris, France or Paris, Texas), or
+  a kind that contradicts the dataset (Georgia as a Country, when the dataset
+  only has the state), is *not* pre-filled; the note lists the candidates.
+- **A place the dataset doesn't have** is copied into `place` as typed, and the
+  note says NEW PLACE: write the full chain and fill in the coordinates.
+- **`mention_type`** is guessed from the title: Direct if it contains the
+  place's name, otherwise a nickname or demonym the term list or
+  `data/place_aliases.csv` knows ("LA" or "Big Apple" is a Nickname,
+  "American" a Demonym). If the title doesn't say, it stays blank, which becomes
+  Direct when approved.
+- The song is also checked against `data/songs.csv` and the queue, and a song
+  already on the map at that place is flagged `set approved to n`.
+
+The row's `note` says what was filled in and why. It is a first draft, not a
+decision: check it, then put `y` in `approved` (or `n`) and commit, as with any
+queue. For a place already on the map, `y` may be the only edit you need;
+otherwise write the full place chain and coordinates first. *Apply approved
+candidates* adds the song with `user_submission` set to `y`, and a row with no
+year is held back until you fill it in. The reader's note stays in the issue;
+nothing from the form but the song itself reaches a CSV. Close the issue
+yourself when you've decided. The `submission` column links each row to its
+issue.
 
 If `SUBMIT_URL` in `index.html` is empty, the button just opens the contact
 page instead.

@@ -19,7 +19,7 @@ const DEFAULT_ORIGINS = "https://cdr4321.github.io,https://www.chrisdallariva.co
 // must match CATEGORIES in scripts/common.py and the selector in index.html
 const KINDS = ["City", "Country", "State/Region", "Continent/Region", "Street/Landmark",
   "Neighborhood/District", "Water/Natural Feature"];
-const MAX = { title: 200, artist: 200, notes: 1500 };
+const MAX = { title: 200, artist: 200, place: 200, notes: 1500 };
 const MAX_BODY = 8000; // bytes of JSON we are willing to read
 
 // the headings are the contract with scripts/add_user_submission.py
@@ -120,11 +120,12 @@ function oneLine(v) {
 }
 
 function validate(d) {
-  for (const k of ["title", "artist", "kind", "year", "notes"]) {
+  for (const k of ["title", "artist", "place", "kind", "year", "notes"]) {
     if (d[k] != null && typeof d[k] !== "string") return { error: "That submission couldn't be read." };
   }
   const title = oneLine(d.title);
   const artist = oneLine(d.artist);
+  const place = oneLine(d.place);
   const kind = oneLine(d.kind);
   const year = oneLine(d.year);
   const notes = String(d.notes ?? "")
@@ -134,14 +135,16 @@ function validate(d) {
 
   if (!title) return { error: "Please enter the song title." };
   if (!artist) return { error: "Please enter the artist." };
+  if (!place) return { error: "Please enter the place named in the title." };
   if (title.length > MAX.title) return { error: "That title is too long." };
   if (artist.length > MAX.artist) return { error: "That artist name is too long." };
+  if (place.length > MAX.place) return { error: "That place is too long." };
   if (!KINDS.includes(kind)) return { error: "Please choose a kind of place." };
   if (year && !(/^\d{4}$/.test(year) && +year >= 1800 && +year <= 2100)) {
     return { error: "Please enter the release year as four digits, or leave it blank." };
   }
   if (notes.length > MAX.notes) return { error: "That note is too long." };
-  return { value: { title, artist, kind, year, notes } };
+  return { value: { title, artist, place, kind, year, notes } };
 }
 
 /**
@@ -155,6 +158,7 @@ function issueBody(s) {
   return [
     "### Song title", "", f(s.title), "",
     "### Artist", "", f(s.artist), "",
+    "### Place", "", f(s.place), "",
     "### Kind of place", "", f(s.kind), "",
     "### Release year", "", f(s.year), "",
     "### Anything else I should know about this song?", "", f(s.notes),

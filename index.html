@@ -184,6 +184,7 @@
   .sg-f{display:block;margin:0 0 13px}
   .sg-l{display:block;margin-bottom:6px;font:500 11px/1.2 "Barlow Condensed",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--foam)}
   .sg-l i{font-style:normal;letter-spacing:.06em;color:var(--mute);text-transform:none;font-family:"Spline Sans",sans-serif;font-size:11px}
+  #suggest input::placeholder{color:var(--mute);opacity:.75}
   #suggest input,#suggest select,#suggest textarea{
     width:100%;padding:9px 11px;background:var(--night-2);border:1px solid var(--rule);border-radius:2px;
     color:var(--ink);font:16px/1.4 "Spline Sans",sans-serif
@@ -438,8 +439,8 @@
       <button id="sclose" type="button" aria-label="Close filters">&#215;</button>
       <div class="foot">
         <p>Why was a particular song included? Tap the <span class="qmark" aria-hidden="true">?</span> beside the title to see why we consider it notable.</p>
-        <p>Something incorrect or missing? Let me know.</p>
-        <button type="button" class="contact" id="suggestbtn" aria-haspopup="dialog">Get in touch</button>
+        <p>Something missing? Let me know.</p>
+        <button type="button" class="contact" id="suggestbtn" aria-haspopup="dialog">Submit a Song</button>
       </div>
     </div>
 
@@ -451,7 +452,7 @@
         <button id="rclose" type="button" aria-label="Close song list" title="Close">&#9660;</button>
         <h2 id="rt">Nothing selected</h2><p id="rs">Pick a marker to list its songs.</p>
       </div>
-      <div id="rlist"><p class="empty">Every marker is a place named in a song title. Bigger markers carry more songs.<br><br>Something incorrect or missing? <a href="https://www.chrisdallariva.com/contact" target="_blank" rel="noopener" style="color:var(--dial)">Let me know</a>.</p></div>
+      <div id="rlist"><p class="empty">Every marker is a place named in a song title. Bigger markers carry more songs.<br><br>Something missing? <a href="https://www.chrisdallariva.com/contact" target="_blank" rel="noopener" style="color:var(--dial)">Let me know</a>.</p></div>
     </div>
   </aside>
   <main><div id="map"></div></main>
@@ -466,6 +467,8 @@
           <input name="title" type="text" maxlength="200" autocomplete="off" required></label>
         <label class="sg-f"><span class="sg-l">Artist</span>
           <input name="artist" type="text" maxlength="200" autocomplete="off" required></label>
+        <label class="sg-f"><span class="sg-l">Place</span>
+          <input name="place" type="text" maxlength="200" autocomplete="off" placeholder="e.g. Memphis, Tennessee" required></label>
         <label class="sg-f"><span class="sg-l">Kind of place</span>
           <select name="kind" required>
             <option value="" selected disabled>Choose one…</option>
@@ -1200,6 +1203,7 @@ const CONTACT_URL='https://www.chrisdallariva.com/contact';
     const v=n=>el(n).value.trim();
     if(!v('title')) return ['title','Please enter the song title.'];
     if(!v('artist')) return ['artist','Please enter the artist.'];
+    if(!v('place')) return ['place','Please enter the place named in the title.'];
     if(!v('kind')) return ['kind','Please choose a kind of place.'];
     const y=v('year');
     if(y&&!(/^\d{4}$/.test(y)&&+y>=1800&&+y<=2100)) return ['year','Please enter the release year as four digits, or leave it blank.'];
@@ -1209,13 +1213,13 @@ const CONTACT_URL='https://www.chrisdallariva.com/contact';
   form.addEventListener('input',e=>{ e.target.removeAttribute('aria-invalid'); err.textContent=''; });
   form.addEventListener('submit',async e=>{
     e.preventDefault();
-    for(const n of ['title','artist','kind','year']) el(n).removeAttribute('aria-invalid');
+    for(const n of ['title','artist','place','kind','year']) el(n).removeAttribute('aria-invalid');
     const bad=problem();
     if(bad){ el(bad[0]).setAttribute('aria-invalid','true'); err.textContent=bad[1]; el(bad[0]).focus(); return; }
     err.textContent='';
     send.disabled=true; send.textContent='Sending…';
     const body={website:el('website').value};
-    for(const n of ['title','artist','kind','year','notes']) body[n]=el(n).value.trim();
+    for(const n of ['title','artist','place','kind','year','notes']) body[n]=el(n).value.trim();
     let msg='';
     try{
       const r=await fetch(SUBMIT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
