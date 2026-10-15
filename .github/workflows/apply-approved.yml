@@ -8,6 +8,7 @@ on:
       - "review/us_candidates.csv"
       - "review/uk_candidates.csv"
       - "review/rock_hall_candidates.csv"
+      - "review/user_candidates.csv"
   workflow_dispatch:
 
 permissions:
@@ -34,7 +35,7 @@ jobs:
           git config user.name "songs-about-places bot"
           git config user.email "actions@github.com"
           git add data/songs.csv scripts/place_terms.json
-          git add -A review/   # the US, UK and Rock Hall queues, and Rock Hall rejections
+          git add -A review/   # the US, UK, Rock Hall and user queues, and Rock Hall rejections
           if git diff --staged --quiet; then
             echo "Nothing approved or rejected."
           else
