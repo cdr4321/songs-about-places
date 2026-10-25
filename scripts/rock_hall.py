@@ -19,6 +19,12 @@ INDUCTEES = os.path.join(ROOT, "review", "rock_hall", "inductees.csv")
 SEP = r"(?:\s+(?:ft|feat|featuring|with|and|x|vs|versus|presents|meets)\s+|\s*[,/;+]\s*)"
 
 
+# Acts whose names contain an inductee's name joined by "and", "with" and the
+# like, which the credit parser would otherwise split: "The Head and the
+# Heart" is not Heart. Written as cnorm() gives them.
+OTHER_ACTS = ["the head and the heart"]
+
+
 def cnorm(s):
     """Credit text reduced to lowercase words; commas and slashes kept as separators."""
     s = unicodedata.normalize("NFKD", str(s)).encode("ascii", "ignore").decode().lower()
@@ -53,6 +59,8 @@ class Inductees:
     def in_credit(self, artist, year=None):
         """Inductees named in an artist credit, in the order found."""
         c = cnorm(artist)
+        for other in OTHER_ACTS:     # a different act whose name contains an inductee's
+            c = re.sub(rf"(?:^|(?<=\s)){re.escape(other)}(?=$|\s)", "otheract", c)
         found = []
         for name, p in self.pats:
             if name in found or not p.search(c):
