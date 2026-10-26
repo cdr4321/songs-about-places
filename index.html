@@ -660,18 +660,21 @@ SERVICES.forEach(([v,label])=>{
 const svcName=()=>(SERVICES.find(x=>x[0]===state.svc)||SERVICES[0])[1];
 
 const songKey=s=>s.t+'\u0000'+s.a+'\u0000'+s.y;
+// search ignores accents and case: "mladek" finds Mládek, "poznan" finds Poznań
+const FOLD={'ł':'l','ø':'o','æ':'ae','œ':'oe','ß':'ss','đ':'d','ð':'d','þ':'th','ı':'i'};
+const fold=t=>String(t).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[łøæœßđðþı]/g,c=>FOLD[c]);
 function songsOf(p,q,placeHit){
   return p.s.filter(s=>{
     if(!state.ments.has(s.m)||s.y<state.from||s.y>state.to) return false;
     if(!s.r.some(r=>state.reasons.has(CHIP_OF[r.col]))) return false;
     if(state.song&&songKey(s)!==state.song) return false;
     if(!q||placeHit) return true;
-    return (state.fields.has('title')&&s.t.toLowerCase().includes(q))
-        || (state.fields.has('artist')&&s.a.toLowerCase().includes(q));
+    return (state.fields.has('title')&&s.ft.includes(q))
+        || (state.fields.has('artist')&&s.fa.includes(q));
   });
 }
 function visible(){
-  const q=state.q.trim().toLowerCase();
+  const q=fold(state.q.trim());
   return PLACES.map(p=>{
     if(!state.cats.has(p.c)) return null;
     // match the place name, its hierarchy (country, continent, state, aliases),
@@ -1160,10 +1163,10 @@ function build(rows,aliasRows){
       // so "Africa" finds Marrakesh and "usa" finds Memphis
       const parts=r.place.split(', '), k=[r.place.toLowerCase()];
       for(let i=0;i<parts.length;i++){const c=parts.slice(i).join(', '); if(alias[c]) k.push(alias[c]);}
-      p={p:r.place,c:r.place_category,lat:+r.latitude,lon:+r.longitude,k:k.join(' | '),s:[]};
+      p={p:r.place,c:r.place_category,lat:+r.latitude,lon:+r.longitude,k:fold(k.join(' | ')),s:[]};
       by.set(r.place,p);
     }
-    p.s.push({y:+r.year,t:r.title,a:r.artist,m:r.mention_type||'Direct',r:reasonsOf(r)});
+    p.s.push({y:+r.year,t:r.title,a:r.artist,ft:fold(r.title),fa:fold(r.artist),m:r.mention_type||'Direct',r:reasonsOf(r)});
   });
   const out=[...by.values()].filter(p=>isFinite(p.lat)&&isFinite(p.lon));
   out.forEach(p=>p.s.sort((a,b)=>b.y-a.y||a.t.localeCompare(b.t)));   // newest first
