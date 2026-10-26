@@ -701,6 +701,23 @@ function showSheet(){
   sheetCount();
   if(!results.classList.contains('up')) sheet(true, rowCount()<=3 ? SMALL : HALF);
 }
+// A marker near the edge of the map would push its hover box out of view (or under the
+// zoom buttons). Nudge the box back inside, and drop it below the marker if there's no
+// room above. 'translate' composes with the transform Leaflet uses to place the box.
+function keepTipInside(tip,d){
+  const el=tip.getElement(); if(!el) return;
+  el.style.translate='';
+  const pad=8, box=map.getContainer().getBoundingClientRect(), r=el.getBoundingClientRect();
+  let dx=0, dy=0;
+  if(r.top<box.top+pad) dy=r.height+d+8;               // no room above: show below the marker
+  const top=r.top+dy, bottom=r.bottom+dy;
+  let left=box.left+pad;
+  const zoom=document.querySelector('.leaflet-control-zoom');
+  if(zoom){ const z=zoom.getBoundingClientRect(); if(top<z.bottom+pad&&bottom>z.top) left=Math.max(left,z.right+pad); }
+  if(r.left<left) dx=left-r.left;
+  else if(r.right>box.right-pad) dx=Math.max(left-r.left,box.right-pad-r.right);
+  if(dx||dy) el.style.translate=dx+'px '+dy+'px';
+}
 function draw(){
   const vis=visible(); VIS=vis;
   if(layer) map.removeLayer(layer);
@@ -724,6 +741,7 @@ function draw(){
       (p.f.length===1?' song':' songs')+'</div><div class="tl">'+top+'</div>'+
       (p.f.length>4?'<div class="tm">+'+(p.f.length-4)+' more — click to see all</div>':''),
       {className:'tip',direction:'top',offset:[0,-d/2-2]});
+    if(!touch) m.on('tooltipopen',e=>keepTipInside(e.tooltip,d));
     m.on('click',()=>{ state.minimised=false; select(p); setTimeout(()=>centreOn(p.lat,p.lon,map.getZoom()),240); });
     markers.set(p.p,m);
     layer.addLayer(m);
