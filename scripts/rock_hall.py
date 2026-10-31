@@ -25,9 +25,16 @@ SEP = r"(?:\s+(?:ft|feat|featuring|with|and|x|vs|versus|presents|meets)\s+|\s*[,
 OTHER_ACTS = ["the head and the heart"]
 
 
+_TYPO = str.maketrans({"\u2010": "-", "\u2011": "-", "\u2012": "-", "\u2013": "-", "\u2014": "-",
+                      "\u2212": "-", "\u2019": "'", "\u2018": "'", "\u02bc": "'"})
+
+
 def cnorm(s):
     """Credit text reduced to lowercase words; commas and slashes kept as separators."""
-    s = unicodedata.normalize("NFKD", str(s)).encode("ascii", "ignore").decode().lower()
+    # MusicBrainz writes "Wu‐Tang Clan" and "Howlin’ Wolf" with typographic hyphens and
+    # apostrophes; turn them into plain ones before dropping non-ASCII characters
+    s = str(s).translate(_TYPO)
+    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode().lower()
     s = s.replace("&", " and ")
     s = re.sub(r"(?<=\w)/(?=\w)", "", s)          # AC/DC
     s = re.sub(r"[.'’\"]", "", s)            # B.B., R.E.M., Guns N' Roses
