@@ -599,6 +599,7 @@
 1956,The Banks of the Ohio,The Kossoy Sisters,"Ohio, United States, North America",State/Region,Direct,40.388,-82.764,,,,,,,,,,,,,,,,,,y
 1956,I Lost My Sugar in Salt Lake City,Julie London,"Salt Lake City, Utah, United States, North America",City,Direct,40.760833,-111.891111,,,,,,,,,,,,,,,,,,y
 1956,I Love Paris,Ella Fitzgerald,"Paris, France, Europe",City,Direct,48.8534,2.3488,,,,,,,,,,,,,,,,,,y
+1956,Knoxville Girl,The Louvin Brothers,"Knoxville, Tennessee, United States, North America",City,Direct,35.96064,-83.92074,,,,,,,,,,,,,,,,,,y
 1957,Chicago,Frank Sinatra,"Chicago, Illinois, United States, North America",City,Direct,41.8376,-87.6818,15,,3,,,,,,,,,,,,Y,,,
 1957,Cumberland Gap,Lonnie Donegan,"Cumberland Gap, United States, North America",Water/Natural Feature,Direct,36.6037,-83.6849,,,1,,,,,,,,,,,,,,,
 1957,Cumberland Gap,The Vipers Skiffle Group,"Cumberland Gap, United States, North America",Water/Natural Feature,Direct,36.6037,-83.6849,,,10,,,,,,,,,,,,,,,
@@ -1035,6 +1036,7 @@
 1962,Tuxedo Junction,Chet Atkins,"Tuxedo Junction, Ensley, Birmingham, Alabama, United States, North America",Street/Landmark,Direct,33.50333,-86.89167,,,,,,,,,,,,Y,,,,,,
 1962,Camptown Twist,Sam Cooke,"Camptown, Pennsylvania, United States, North America",City,Direct,41.73111,-76.23472,,,,,,,,,,,,Y,,,,,,
 1962,Twisting in the U.S.A.,The Shirelles,"United States, North America",Country,Direct,38.8951,-77.0364,,,,,,,,,,,,Y,,,,,,
+1962,Bruxelles,Jacques Brel,"Brussels, Belgium, Europe",City,Direct,50.85045,4.34878,,,,,,,,,,,,,,,,,,y
 1963,Abilene,George Hamilton IV,"Abilene, Texas, United States, North America",City,Direct,32.4545,-99.7381,15,94,,,,,,,,,,,,,,,,
 1963,Bossa Nova U.S.A.,The Dave Brubeck Quartet,"United States, North America",Country,Direct,38.8951,-77.0364,69,,,,,,,,,,,,,,,,,
 1963,Casablanca,Kenny Ball,"Casablanca, Morocco, Africa",City,Direct,33.58831,-7.61138,,,21,,,,,,,,,,,,,,,
@@ -1200,6 +1202,7 @@
 1964,Ferry Cross the Mersey,Gerry & The Pacemakers,"Mersey River, England, United Kingdom, Europe",Water/Natural Feature,Direct,53.395,-3.014,,,,,,,,,,,,,,,,,,y
 1964,Natchez Fire,John Lee Hooker,"Natchez, Mississippi, United States, North America",City,Direct,31.55444,-91.3875,,,,,,,,,,,,Y,,,,,,
 1964,Song From Moulin Rouge,The Platters,"Moulin Rouge, Paris, France, Europe",Street/Landmark,Direct,48.88417,2.3325,,,,,,,,,,,,Y,,,,,,
+1964,Wie schön wäre Wien ohne Wiener,Georg Kreisler,"Vienna, Austria, Europe",City,Direct,48.2085,16.3721,,,,,,,,,,,,,,,,,,y
 1965,(I Lost My Heart) In San Francisco,Tony Bennett,"San Francisco, California, United States, North America",City,Direct,37.78,-122.4193,,,25,,,,,,,,,,,,,,,
 1965,A Windmill in Old Amsterdam,Ronnie Hilton,"Amsterdam, The Netherlands, Europe",City,Direct,52.37403,4.88969,,,23,,,,,,,,,,,,,,,
 1965,California Dreamin',The Mamas & The Papas,"California, United States, North America",State/Region,Direct,36.116,-119.682,4,1,9,79,37,,Y,,,,Y,Y,420,,,y,,
@@ -1524,6 +1527,7 @@
 1968,Talking Ben Tre,Pete Seeger,"Ben Tre, Vietnam, Asia",City,Direct,10.2415,106.3759,,,,,,,,,,,,Y,,,,,,
 1968,T for Texas (Blue Yodel No. 1),The Everly Brothers,"Texas, United States, North America",State/Region,Direct,31.054,-97.563,,,,,,,,,,,,Y,,,,,,
 1968,Long Walk to D.C.,The Staple Singers,"Washington, D.C., United States, North America",City,Direct,38.8951,-77.0364,,,,,,,,,,,,Y,,,,,,
+1968,Colorado,Up with People,"Colorado, United States, North America",State/Region,Direct,39.059,-105.311,,,,,,,,,,,,,,,,,,y
 1969,Arizona,Mark Lindsay,"Arizona, United States, North America",State/Region,Direct,33.729,-111.431,10,66,,,,,,,,,,,,,,,,
 1969,Big in Vegas,Buck Owens and The Buckaroos,"Las Vegas, Nevada, United States, North America",City,Nickname,36.2277,-115.264,100,,,,,,,,,,,,,,,,,
 1969,Born on the Bayou,Creedence Clearwater Revival,"Louisiana Bayou, Louisiana, United States, North America",Water/Natural Feature,Direct,29.9,-91.3,,,,3096,,,,,,,,Y,,,,y,,
@@ -2075,6 +2079,7 @@
 1973,Kansas City,T-Bone Walker,"Kansas City, Missouri, United States, North America",City,Direct,39.1252,-94.5511,,,,,,,,,,,,Y,,,,,,
 1973,California Saga: Big Sur,The Beach Boys,"Big Sur, California, United States, North America",State/Region,Direct,36.2704,-121.8081,,,,,,,,,,,,Y,,,,,,
 1973,Sunset Blvd,Todd Rundgren,"Sunset Boulevard, Los Angeles, California, United States, North America",Street/Landmark,Direct,34.09,-118.385,,,,,,,,,,,,Y,,,,,,
+1973,Made in Normandie,Stone et Charden,"Normandy, France, Europe",State/Region,Direct,48.88,0.17,,,,,,,,,,,,,,,,,,y
 1974,America,David Essex,"United States, North America",Country,Direct,38.8951,-77.0364,,,32,,,,,,,,,,,,,,,
 1974,American Girls,Rick Springfield,"United States, North America",Country,Demonym,38.8951,-77.0364,98,,,,,,,,,,,,,,,,,
 1974,Battle of New Orleans,The Nitty Gritty Dirt Band,"New Orleans, Louisiana, United States, North America",City,Direct,30.0686,-89.939,72,,,,,,,,,,,,,,,,,
@@ -2309,6 +2314,8 @@
 1976,Royal Orleans,Led Zeppelin,"New Orleans, Louisiana, United States, North America",City,Direct,30.0686,-89.939,,,,,,,,,,,,Y,,,,,,
 1976,Avalon,Chet Atkins and Les Paul,"Avalon, California, United States, North America",City,Direct,33.34281,-118.32785,,,,,,,,,,,,Y,,,,,,
 1976,Join Me in L.A.,Warren Zevon,"Los Angeles, California, United States, North America",City,Nickname,34.0194,-118.4108,,,,,,,,,,,,Y,,,,,,
+1976,Je reviendrai à Montréal,Robert Charlebois,"Montreal, Quebec, Canada, North America",City,Direct,45.5088,-73.5878,,,,,,,,,,,,,,,,,,y
+1976,Vancouver,Véronique Sanson,"Vancouver, British Columbia, Canada, North America",City,Direct,49.260833,-123.113889,,,,,,,,,,,,,,,,,,y
 1977,Amarillo,Neil Sedaka,"Amarillo, Texas, United States, North America",City,Direct,35.222,-101.8313,44,,,,,,,,,,,,,,,,,
 1977,April Sun in Cuba,Dragon,"Cuba, North America",Country,Direct,23.133,-82.383,,,,9662,,,,,,,,,,,,,,
 1977,Baltimore,Randy Newman,"Baltimore, Maryland, United States, North America",City,Direct,39.3002,-76.6105,,,,7675,,,,,,,,Y,,,,,,
@@ -2408,6 +2415,7 @@
 1977,Jericho,Joni Mitchell,"Jericho, Palestine, Asia",City,Direct,31.85611,35.46,,,,,,,,,,,,Y,,,,,,
 1977,Star of Bethlehem,Neil Young,"Bethlehem, Palestine, Asia",City,Direct,31.70444,35.20639,,,,,,,,,,,,Y,,,,,,
 1977,Columbus Georgia Stockade,Woody Guthrie,"Columbus, Georgia, United States, North America",City,Direct,32.461,-84.9877,,,,,,,,,,,,Y,,,,,,
+1977,Alexandrie Alexandra,Claude François,"Alexandria, Egypt, Africa",City,Direct,31.2018,29.9158,,,,,,,,,,,,,,,,,,y
 1978,(I Don't Wanna Go To) Chelsea,Elvis Costello and the Attractions,"Chelsea, London, England, United Kingdom, Europe",Neighborhood/District,Direct,51.4875,-0.1687,,,16,1594,,,,,,,,Y,,,,,,
 1978,Argentine Melody,San Jose,"Argentina, South America",Country,Demonym,-34.6131,-58.3772,,,14,,,,,,,,,,,,,,,
 1978,Back in the U.S.A.,Linda Ronstadt,"United States, North America",Country,Direct,38.8951,-77.0364,16,,,,,,,,,,,Y,,,,,,
@@ -3442,6 +3450,7 @@
 1993,Karviná,Yo Yo Band,"Karvina, Czechia, Europe",City,Direct,49.854,18.54169,,,,,,,,,,,,,,,,,,y
 1993,"Ian Fish, U.K. Heir",David Bowie,"United Kingdom, Europe",Country,Direct,51.5085,-0.1257,,,,,,,,,,,,Y,,,,,,
 1993,Back in the U. S. A.,Johnnie Johnson,"United States, North America",Country,Direct,38.8951,-77.0364,,,,,,,,,,,,Y,,,,,,
+1993,Callin' Baton Rouge,Garth Brooks,"Baton Rouge, Louisiana, United States, North America",City,Direct,30.4433,-91.1875,,,,,,,,,,,,,,,,,,y
 1994,America - World Cup Theme 1994,Leonard Bernstein,"United States, North America",Country,Direct,38.8951,-77.0364,,,44,,,,,,,,,,,,,,,
 1994,American Life in the Summertime,Francis Dunnery,"United States, North America",Country,Demonym,38.8951,-77.0364,,,91,,,,,,,,,,,,,,,
 1994,Astral America,Apollo 440,"United States, North America",Country,Direct,38.8951,-77.0364,,,36,,,,,,,,,,,,,,,
@@ -3560,6 +3569,7 @@
 1995,Bremen,Wolf Maahn,"Bremen, Germany, Europe",City,Direct,53.0758,8.8072,,,,,,,,,,,,,,,,,,y
 1995,Dublin Blues,Guy Clark,"Dublin, Ireland, Europe",City,Direct,53.3331,-6.2489,,,,,,,,,,,,,,,,,,y
 1995,Old L.A. Tonight,Ozzy Osbourne,"Los Angeles, California, United States, North America",City,Nickname,34.0194,-118.4108,,,,,,,,,,,,Y,,,,,,
+1995,On a Bus to St. Cloud,Trisha Yearwood,"St. Cloud, Minnesota, United States, North America",City,Direct,45.5608,-94.16249,,,,,,,,,,,,,,,,,,y
 1996,African Dream,Wasis Diop ft. Lena Fiagbe,Africa,Continent/Region,Demonym,1.6508,17.6791,,,44,,,,,,,,,,,,,,,
 1996,Alabama Blues (Revisited),St. Germain,"Alabama, United States, North America",State/Region,Direct,32.806,-86.791,,,50,,,,,,,,,,,,,,,
 1996,America (I Love America),Full Intention,"United States, North America",Country,Direct,38.8951,-77.0364,,,32,,,,,,,,,,,,,,,
@@ -4284,6 +4294,7 @@
 2006,Stanice Jiřího z Poděbrad,Jaromír Nohavica,"Jiriho z Podebrad Station, Vinohrady, Prague, Czechia, Europe",Street/Landmark,Direct,50.07783,14.450295,,,,,,,,,,,,,,,,,,y
 2006,Buffalo Gals,Bruce Springsteen,"Buffalo, New York, United States, North America",City,Direct,42.88645,-78.87837,,,,,,,,,,,,Y,,,,,,
 2006,Hollywood,Jay-Z ft. Beyoncé,"Hollywood, California, United States, North America",Neighborhood/District,Direct,34.0928,-118.3287,,,,,,,,,,,,Y,,,,,,
+2006,Ellsworth,Rascal Flatts,"Ellsworth, Kansas, United States, North America",City,Direct,38.73056,-98.22811,,,,,,,,,,,,,,,,,,y
 2007,Australia,The Shins,"Australia, Oceania",Country,Direct,-35.2809,149.13,,,62,,,,,,,,,,,,,,,
 2007,Beer in Mexico,Kenny Chesney,"Mexico, North America",Country,Direct,19.4285,-99.1277,61,,,,,,,,,,,,,,,,,
 2007,Berlin,Black Rebel Motorcycle Club,"Berlin, Germany, Europe",City,Direct,52.5244,13.4105,,,89,,,,,,,,,,,,,,,
@@ -4339,6 +4350,8 @@
 2007,Paris Is Burning,St. Vincent,"Paris, France, Europe",City,Direct,48.8534,2.3488,,,,,,,,,,,,,,,,,,y
 2007,Am Borsigplatz geboren,Andy Schade,"Borsigplatz, Dortmund, Germany, Europe",Street/Landmark,Direct,51.5287,7.4742,,,,,,,,,,,,,,,,,,y
 2007,Gronlandic Edit,of Montreal,"Gronland, Oslo, Norway, Europe",Neighborhood/District,Demonym,59.9125,10.761944,,,,,,,,,,,,,,,,,,y
+2007,Ludlow Street,Suzanne Vega,"Ludlow Street, New York, New York, United States, North America",Street/Landmark,Direct,40.7197,-73.9885,,,,,,,,,,,,,,,,,,y
+2007,New York Is a Woman,Suzanne Vega,"New York, New York, United States, North America",City,Direct,40.6643,-73.9385,,,,,,,,,,,,,,,,,,y
 2008,All-American Girl,Carrie Underwood,"United States, North America",Country,Demonym,38.8951,-77.0364,27,,,,,,,,,,,,,,,,,
 2008,American Boy,Estelle ft. Kanye West,"United States, North America",Country,Demonym,38.8951,-77.0364,9,39,1,1511,,,,,,,,,,,,y,,
 2008,American Boy,Studio All-Stars,"United States, North America",Country,Demonym,38.8951,-77.0364,52,,,,,,,,,,,,,,,,,
@@ -4394,6 +4407,10 @@
 2008,Idaho,Afroman,"Idaho, United States, North America",State/Region,Direct,44.24,-114.478,,,,,,,,,,,,,,,,,,y
 2008,Carlton North,Guy Blackman,"Carlton North, Melbourne, Australia, Oceania",Neighborhood/District,Direct,-37.78333,144.96667,,,,,,,,,,,,,,,,,,y
 2008,Jericho Road,Joan Baez,"Jericho, Palestine, Asia",City,Direct,31.85611,35.46,,,,,,,,,,,,Y,,,,,,
+2008,Edmonton,The Rural Alberta Advantage,"Edmonton, Alberta, Canada, North America",City,Direct,53.55014,-113.46871,,,,,,,,,,,,,,,,,,y
+2008,"Frank, AB",The Rural Alberta Advantage,"Frank, Alberta, Canada, North America",City,Direct,49.60111,-114.40611,,,,,,,,,,,,,,,,,,y
+2008,The Dethbridge in Lethbridge,The Rural Alberta Advantage,"Lethbridge, Alberta, Canada, North America",City,Direct,49.69999,-112.81856,,,,,,,,,,,,,,,,,,y
+2008,Topeka,Ludo,"Topeka, Kansas, United States, North America",City,Direct,39.0362,-95.6948,,,,,,,,,,,,,,,,,,y
 2009,America's Suitehearts,Fall Out Boy,"United States, North America",Country,Direct,38.8951,-77.0364,78,,76,,,,,,,,,,,,,,,
 2009,American Ride,Toby Keith,"United States, North America",Country,Demonym,38.8951,-77.0364,35,,,,,,,,,,,,,,,,,
 2009,American Saturday Night,Brad Paisley,"United States, North America",Country,Demonym,38.8951,-77.0364,67,,,,,,,,,,,,,,,,,
@@ -4582,6 +4599,7 @@
 2011,Bakersfield,Social Distortion,"Bakersfield, California, United States, North America",City,Direct,35.37329,-119.01871,,,,,,,,,,,,,,,,,,y
 2011,Made in America,Jay-Z and Kanye West ft. Frank Ocean,"United States, North America",Country,Direct,38.8951,-77.0364,,,,,,,,,,,,Y,,,,,,
 2011,Buffalo Girls,Pete Seeger,"Buffalo, New York, United States, North America",City,Direct,42.88645,-78.87837,,,,,,,,,,,,Y,,,,,,
+2011,Rhode Island,The Front Bottoms,"Rhode Island, United States, North America",State/Region,Direct,41.6762,-71.5562,,,,,,,,,,,,,,,,,,y
 2012,El Cerrito Place,Kenny Chesney,"El Cerrito, California, United States, North America",City,Direct,37.9196,-122.3024,72,,,,,,,,,,,,,,,,,
 2012,Hollywood Forever Cemetery Sings,Father John Misty,"Hollywood, California, United States, North America",Neighborhood/District,Direct,34.0928,-118.3287,,,,4735,,,,,,,,,,,,,,
 2012,Kyoto,Skrillex ft. Sirah,"Kyoto, Japan, Asia",City,Direct,35.0211,135.7538,74,,,,,,,,,,,,,,,,,
@@ -4723,6 +4741,7 @@
 2014,Mein Rostock,Marteria,"Rostock, Germany, Europe",City,Direct,54.0887,12.1405,,,,,,,,,,,,,,,,,,y
 2014,Planeta Praha,Vladimir 518 ft. Martin Svátek,"Prague, Czechia, Europe",City,Direct,50.088,14.4208,,,,,,,,,,,,,,,,,,y
 2014,To Susan on the West Coast Wating,Donovan,"West Coast, United States, North America",Continent/Region,Direct,40,-122,,,,,,,,,,,,Y,,,,,,
+2014,Texas Reznikoff,Mitski,"Texas, United States, North America",State/Region,Direct,31.054,-97.563,,,,,,,,,,,,,,,,,,y
 2015,American Beauty/American Psycho,Fall Out Boy,"United States, North America",Country,Demonym,38.8951,-77.0364,,,61,,,,,,,,,,,,,,,
 2015,American Oxygen,Rihanna,"United States, North America",Country,Demonym,38.8951,-77.0364,78,,71,,,,,,,,,,,,,,,
 2015,Brazil,Declan McKenna,"Brazil, South America",Country,Direct,-15.7939,-47.8828,,,56,,,,,,,,,,,,,y,,
@@ -4767,6 +4786,7 @@
 2015,Bringin' In The Georgia Mail,Floyd Cramer,"Georgia, United States, North America",State/Region,Direct,33.04,-83.643,,,,,,,,,,,,Y,,,,,,
 2015,Montana,James Taylor,"Montana, United States, North America",State/Region,Direct,46.9219,-110.4544,,,,,,,,,,,,Y,,,,,,
 2015,Ethiopia,Wu-Tang Clan,"Ethiopia, Africa",Country,Direct,9.0249,38.7469,,,,,,,,,,,,Y,,,,,,
+2015,West Virginia,The Front Bottoms,"West Virginia, United States, North America",State/Region,Direct,39,-80,,,,,,,,,,,,,,,,,,y
 2016,Alaska,Maggie Rogers,"Alaska, United States, North America",State/Region,Direct,61.37,-152.404,,,,7786,,,,,,,,,,,,,,
 2016,American Country Love Song,Jake Owen,"United States, North America",Country,Demonym,38.8951,-77.0364,55,,,,,,,,,,,,,,,,,
 2016,Europe Is Lost,Kate Tempest,Europe,Continent/Region,Direct,54.526,15.2551,,,,9891,,,,,,,,,,,,,,
@@ -4815,6 +4835,7 @@
 2016,Oslo,Schreng Schreng & La La,"Oslo, Norway, Europe",City,Direct,59.91273,10.74609,,,,,,,,,,,,,,,,,,y
 2016,Reykjavik,Emmsje Gauti,"Reykjavik, Iceland, Europe",City,Direct,64.1355,-21.8954,,,,,,,,,,,,,,,,,,y
 2016,I Dreamed I Saw St. Augustine,Eric Clapton,"St. Augustine, Florida, United States, North America",City,Direct,29.9012,-81.3124,,,,,,,,,,,,Y,,,,,,
+2016,New York Is My Destination,Suzanne Vega,"New York, New York, United States, North America",City,Direct,40.6643,-73.9385,,,,,,,,,,,,,,,,,,y
 2017,American Dream,LCD Soundsystem,"United States, North America",Country,Demonym,38.8951,-77.0364,,,,9784,,,,,,,,,,,,,,
 2017,Barcelona,Ed Sheeran,"Barcelona, Spain, Europe",City,Direct,41.3888,2.159,96,,12,,,,,,,,,,,,,,,
 2017,Carolina,Harry Styles,"The Carolinas, United States, North America",State/Region,Direct,34.8,-79.5,,,51,,,,,,,,,,,,,,,
@@ -4916,6 +4937,7 @@
 2018,Streets of Edinburgh,The Proclaimers,"Edinburgh, Scotland, United Kingdom, Europe",City,Direct,55.9533,-3.1883,,,,,,,,,,,,,,,,,,y
 2018,Don't Move Back to LA,Okkervil River,"Los Angeles, California, United States, North America",City,Nickname,34.0194,-118.4108,,,,,,,,,,,,,,,,,,y
 2018,Road to Bethlehem,Dailey and Vincent ft. Dolly Parton,"Bethlehem, Palestine, Asia",City,Direct,31.70444,35.20639,,,,,,,,,,,,Y,,,,,,
+2018,Paris,Sabrina Carpenter,"Paris, France, Europe",City,Direct,48.8534,2.3488,,,,,,,,,,,,,,,,,,y
 2019,4PM in Calabasas,Drake,"Calabasas, California, United States, North America",City,Direct,34.1338,-118.6689,,,72,,,,,,,,,,,,,,,
 2019,Costa Rica,"Dreamville ft. BAS, JID, Guapdad 4000, Reese LAFLARE, Jace, Mez, Smokepurpp, Buddy and Ski Mask The Slump God","Costa Rica, North America",Country,Direct,9.9281,-84.0907,75,,,,,,,,,,,,,,,,,
 2019,Cuban Links,Rod Wave and Kevin Gates,"Cuba, North America",Country,Demonym,23.133,-82.383,92,,,,,,,,,,,,,,,,,
@@ -4965,6 +4987,7 @@
 2019,Houston Dubai,Vampire Weekend,"Houston, Texas, United States, North America",City,Direct,29.7805,-95.3863,,,,,,,,,,,,,,,,,,y
 2019,Houston Dubai,Vampire Weekend,"Dubai, United Arab Emirates, Asia",City,Direct,25.21861676,55.2713668,,,,,,,,,,,,,,,,,,y
 2019,Medellín,Madonna and Maluma,"Medellin, Colombia, South America",City,Direct,6.2442,-75.5812,,,,,,,,,,,,Y,,,,,,
+2019,Mazowiecka Kiecka,Mery Spolsky,"Masovia, Poland, Europe",State/Region,Demonym,52.217,21.0,,,,,,,,,,,,,,,,,,y
 2020,(Douha) Mali Mali,Disclosure and Fatoumata Diawara,"Mali, Africa",Country,Direct,12.6392,-8.0029,,,83,,,,,,,,,,,,,,,
 2020,Argentina,Gunna,"Argentina, South America",Country,Direct,-34.6131,-58.3772,67,,,,,,,,,,,,,,,,,
 2020,Bad Bitch from Tokyo (Intro),Pop Smoke,"Tokyo, Japan, Asia",City,Direct,35.6895,139.6917,55,,,,,,,,,,,,,,,,,
@@ -5023,6 +5046,9 @@
 2020,Berlin,Fenne Lily,"Berlin, Germany, Europe",City,Direct,52.5244,13.4105,,,,,,,,,,,,,,,,,,y
 2020,Husavik (My Hometown),Will Ferrell & Molly Sandén,"Husavik, Iceland, Europe",City,Direct,66.04148,-17.33834,,,59,,,,,,,,,,,,,,,y
 2020,Taksilla Vaalaan,Maustetytöt,"Vaala, Finland, Europe",City,Direct,64.56667,26.83333,,,,,,,,,,,,,,,,,,y
+2020,"Fairbanks, Alaska",The Front Bottoms,"Fairbanks, Alaska, United States, North America",City,Direct,64.83778,-147.71639,,,,,,,,,,,,,,,,,,y
+2020,Oklahoma City,Zach Bryan,"Oklahoma City, Oklahoma, United States, North America",City,Direct,35.46756,-97.51643,,,,,,,,,,,,,,,,,,y
+2020,California,Chappell Roan,"California, United States, North America",State/Region,Direct,36.116,-119.682,,,,,,,,,,,,,,,,,,y
 2021,Broadway Girls,Lil Durk ft. Morgan Wallen,"Broadway, Nashville, Tennessee, United States, North America",Street/Landmark,Direct,36.1718,-86.785,14,81,,,,,,,,,,,,,,,,
 2021,Moved to Miami,Roddy Ricch ft. Lil Baby,"Miami, Florida, United States, North America",City,Direct,25.7752,-80.2086,85,,,,,,,,,,,,,,,,,
 2021,Mónaco,Lagos,"Monaco, Europe",Country,Direct,43.7372,7.4215,,,,,,,,,,,,,,,,y,,
@@ -5065,6 +5091,9 @@
 2021,Colorado,Milky Chance,"Colorado, United States, North America",State/Region,Direct,39.059,-105.311,,,,,,,,,,,,,,,,,,y
 2021,"The Mauritian Badminton Doubles Champion, 1973",Hamish Hawk,"Mauritius, Africa",Country,Demonym,-20.16194,57.49889,,,,,,,,,,,,,,,,,,y
 2021,Crawling to the U.S.A.,"Elvis Costello & The Attractions, Gian Marco and Nicole Zignago","United States, North America",Country,Direct,38.8951,-77.0364,,,,,,,,,,,,Y,,,,,,
+2021,Hannover,Lande Hekt,"Hanover, Germany, Europe",City,Direct,52.37052,9.73322,,,,,,,,,,,,,,,,,,y
+2021,New America,MARINA,"United States, North America",Country,Direct,38.8951,-77.0364,,,,,,,,,,,,,,,,,,y
+2021,Stranded in Berlin,Lande Hekt,"Berlin, Germany, Europe",City,Direct,52.5244,13.4105,,,,,,,,,,,,,,,,,,y
 2022,6AM in Dubai,Russ Millions and Buni and YV,"Dubai, United Arab Emirates, Asia",City,Direct,25.21861676,55.2713668,,,100,,,,,,,,,,,,,,,
 2022,America Has a Problem,Beyonce ft. Kendrick Lamar,"United States, North America",Country,Direct,38.8951,-77.0364,38,,22,,,,,,,,,,,,,,,
 2022,California Breeze,Lil Baby,"California, United States, North America",State/Region,Direct,36.116,-119.682,4,,26,,,,,,,,,,,,,,,
@@ -5101,6 +5130,9 @@
 2022,New York,Pale,"New York, New York, United States, North America",City,Direct,40.6643,-73.9385,,,,,,,,,,,,,,,,,,y
 2022,Ode to NYC,Blossoms,"New York, New York, United States, North America",City,Nickname,40.6643,-73.9385,,,,,,,,,,,,,,,,,,y
 2022,Summer in New York,SOFI TUKKER,"New York, New York, United States, North America",City,Direct,40.6643,-73.9385,,,,,,,,,,,,,,,,,,y
+2022,From Austin,Zach Bryan,"Austin, Texas, United States, North America",City,Direct,30.3072,-97.756,,,,,,,,,,,,,,,,,,y
+2022,Tishomingo,Zach Bryan,"Tishomingo, Oklahoma, United States, North America",City,Direct,34.23621,-96.67861,,,,,,,,,,,,,,,,,,y
+2022,"Valentine, Texas",Mitski,"Valentine, Texas, United States, North America",City,Direct,30.5875,-104.49556,,,,,,,,,,,,,,,,,,y
 2023,8AM in Charlotte,Drake,"Charlotte, North Carolina, United States, North America",City,Direct,35.2087,-80.8307,17,,,,,,,,,,,,,,,,,
 2023,All-American Bitch,Olivia Rodrigo,"United States, North America",Country,Demonym,38.8951,-77.0364,13,,78,,,,,,,,,,,,,,,
 2023,American Town,Ed Sheeran,"United States, North America",Country,Demonym,38.8951,-77.0364,,,27,,,,,,,,,,,,,,,
@@ -5144,6 +5176,7 @@
 2023,Oslo,Matthew Hall,"Oslo, Norway, Europe",City,Direct,59.91273,10.74609,,,,,,,,,,,,,,,,,,y
 2023,Australia,G Flip,"Australia, Oceania",Country,Direct,-35.2809,149.13,,,,,,,,,,,,,,,,,,y
 2023,Nekonečné řešení brněnské otázky,Aljoša,"Brno, Czechia, Europe",City,Demonym,49.19522,16.60796,,,,,,,,,,,,,,,,,,y
+2023,Paris,The Front Bottoms,"Paris, France, Europe",City,Direct,48.8534,2.3488,,,,,,,,,,,,,,,,,,y
 2024,Ain't No Love in Oklahoma,Luke Combs,"Oklahoma, United States, North America",State/Region,Direct,35.565,-96.928,13,37,50,,,,,,,,,,,,,,,
 2024,American Nights,Zach Bryan,"United States, North America",Country,Demonym,38.8951,-77.0364,21,,,,,,,,,,,,,,,,,
 2024,Bigger in Texas,Megan Thee Stallion,"Texas, United States, North America",State/Region,Direct,31.054,-97.563,84,,,,,,,,,,,,,,,,,
@@ -5185,6 +5218,7 @@
 2024,De Javastraat,Lui Paard,"Javastraat, Indische Buurt, Amsterdam, The Netherlands, Europe",Street/Landmark,Direct,52.3632,4.9407,,,,,,,,,,,,,,,,,,y
 2024,Here's to You Ararat,Ladaniva,"Mount Ararat, Turkey, Asia",Water/Natural Feature,Direct,39.7019,44.2983,,,,,,,,,,,,,,,,,,y
 2024,Walls of Jericho,Bon Jovi,"Jericho, Palestine, Asia",City,Direct,31.85611,35.46,,,,,,,,,,,,Y,,,,,,
+2024,Whole Lotta Lubbock,William Clark Green,"Lubbock, Texas, United States, North America",City,Direct,33.585,-101.845,,,,,,,,,,,,,,,,,,y
 2025,Choosin' Texas,Ella Langley,"Texas, United States, North America",State/Region,Direct,31.054,-97.563,1,,1,,,,,,,,,,,,,,,
 2025,Lo Que Le Paso a Hawaii,Bad Bunny,"Hawaii, United States, North America",State/Region,Direct,21.094,-157.498,62,,,,,,,,,,,,,,,,,
 2025,Miami,Morgan Wallen ft. Lil Wayne and Rick Ross,"Miami, Florida, United States, North America",City,Direct,25.7752,-80.2086,21,,,,,,,,,,,,,,,,,
@@ -5224,6 +5258,12 @@
 2025,Medina Ohio,McCafferty,"Medina, Ohio, United States, North America",City,Direct,41.1384,-81.8637,,,,,,,,,,,,,,,,,,y
 2025,"On a Pier, on the Hudson",Jens Lekman ft. Matilda Sargren,"Hudson River, New York, United States, North America",Water/Natural Feature,Direct,41.7,-73.95,,,,,,,,,,,,,,,,,,y
 2025,Charlottenburg,TULPE,"Charlottenburg, Berlin, Germany, Europe",Neighborhood/District,Direct,52.5167,13.3039,,,,,,,,,,,,,,,,,,y
+2025,Coulee City Rodeo Queen,Olivia Rafferty,"Coulee City, Washington, United States, North America",City,Direct,47.61126,-119.29225,,,,,,,,,,,,,,,,,,y
+2025,Galway,Suzanne Vega,"Galway, Ireland, Europe",City,Direct,53.2724,-9.051,,,,,,,,,,,,,,,,,,y
+2025,Kocham Polskę,Mery Spolsky,"Poland, Europe",Country,Direct,52.2298,21.0118,,,,,,,,,,,,,,,,,,y
+2025,Last Train from Mariupol,Suzanne Vega,"Mariupol, Ukraine, Europe",City,Direct,47.09514,37.54131,,,,,,,,,,,,,,,,,,y
+2025,Nie Ma Już PL,Mery Spolsky,"Poland, Europe",Country,Nickname,52.2298,21.0118,,,,,,,,,,,,,,,,,,y
+2025,Speakers' Corner,Suzanne Vega,"Speakers' Corner, Hyde Park, London, England, United Kingdom, Europe",Street/Landmark,Direct,51.5118,-0.1600,,,,,,,,,,,,,,,,,,y
 2026,American Cars,Noah Kahan,"United States, North America",Country,Demonym,38.8951,-77.0364,16,,,,,,,,,,,,,,,,,
 2026,American Girls,Harry Styles,"United States, North America",Country,Demonym,38.8951,-77.0364,4,,1,,,,,,,,,,,,,,,
 2026,Boston,Stella Lefty,"Boston, Massachusetts, United States, North America",City,Direct,42.332,-71.0202,2,,3,,,,,,,,,,,,,,,
@@ -5263,3 +5303,5 @@
 2026,Come Back to Galway,The Waterboys,"Galway, Ireland, Europe",City,Direct,53.2724,-9.051,,,,,,,,,,,,,,,,,,y
 2026,Japan,Fontaines DC,"Japan, Asia",Country,Direct,35.6895,139.6917,,,14,,,,,,,,,,,,,,,
 2026,Lodi When,Zach Bryan,"Lodi, California, United States, North America",City,Direct,38.1216,-121.2908,22,,33,,,,,,,,,,,,,,,
+2026,Abilene,Kacey Musgraves,"Abilene, Texas, United States, North America",City,Direct,32.4545,-99.7381,,,,,,,,,,,,,,,,,,y
+2026,Hawaii,Red Velvet,"Hawaii, United States, North America",State/Region,Direct,21.094,-157.498,,,,,,,,,,,,,,,,,,y
